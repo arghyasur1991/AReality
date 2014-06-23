@@ -45,26 +45,12 @@ public class DirectVideo {
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 
     public DirectVideo() {
-        ByteBuffer bb = ByteBuffer.allocateDirect(squareVertices.length * 4);
-        bb.order(ByteOrder.nativeOrder());
-        vertexBuffer = bb.asFloatBuffer();
-        vertexBuffer.put(squareVertices);
-        vertexBuffer.position(0);
+        vertexBuffer = OpenGLESUtility.createBuffer(squareVertices);
+        drawListBuffer = OpenGLESUtility.createBuffer(drawOrder);
+        textureVerticesBuffer = OpenGLESUtility.createBuffer(textureVertices);
 
-        ByteBuffer dlb = ByteBuffer.allocateDirect(drawOrder.length * 2);
-        dlb.order(ByteOrder.nativeOrder());
-        drawListBuffer = dlb.asShortBuffer();
-        drawListBuffer.put(drawOrder);
-        drawListBuffer.position(0);
-
-        ByteBuffer bb2 = ByteBuffer.allocateDirect(textureVertices.length * 4);
-        bb2.order(ByteOrder.nativeOrder());
-        textureVerticesBuffer = bb2.asFloatBuffer();
-        textureVerticesBuffer.put(textureVertices);
-        textureVerticesBuffer.position(0);
-
-        int vertexShader = GLCameraRenderer.loadShader(GLES20.GL_VERTEX_SHADER, Shaders.VertexShader.normal());
-        int fragmentShader = GLCameraRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER, Shaders.FragmentShader.texture());
+        int vertexShader = OpenGLESUtility.loadShader(GLES20.GL_VERTEX_SHADER, Shaders.VertexShader.normal());
+        int fragmentShader = OpenGLESUtility.loadShader(GLES20.GL_FRAGMENT_SHADER, Shaders.FragmentShader.texture());
         
         mProgram = GLES20.glCreateProgram();             // create empty OpenGL ES Program
         GLES20.glEnable(GLES20.GL_BLEND);

@@ -121,16 +121,16 @@ public class Square {
         textureVerticesBuffer.position(0);
 
         // prepare shaders and OpenGL program
-        int vertexShader = GLCameraRenderer.loadShader(
+        int vertexShader = OpenGLESUtility.loadShader(
                 GLES20.GL_VERTEX_SHADER,
                 vertexShaderCode);
         int fragmentShader = 0;
         if (texture != ISTEX) {
-            fragmentShader = GLCameraRenderer.loadShader(
+            fragmentShader = OpenGLESUtility.loadShader(
                     GLES20.GL_FRAGMENT_SHADER,
                     fragmentShaderTexCode);
         } else {
-            fragmentShader = GLCameraRenderer.loadShader(
+            fragmentShader = OpenGLESUtility.loadShader(
                     GLES20.GL_FRAGMENT_SHADER,
                     fragmentShaderColorCode);
         }
