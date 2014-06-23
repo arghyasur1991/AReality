@@ -13,15 +13,15 @@ import java.io.IOException;
 public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvailableListener {
 
     private Camera mCamera;
-    private MyGLSurfaceView glSurfaceView;
+    private GLCameraSurfaceView glSurfaceView;
     private SurfaceTexture surface;
-    MyGL20Renderer renderer;
+    GLCameraRenderer renderer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        glSurfaceView = new MyGLSurfaceView(this);
+        glSurfaceView = new GLCameraSurfaceView(this);
         renderer = glSurfaceView.getRenderer();
         
         setContentView(R.layout.main);
@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
         surface.setOnFrameAvailableListener(this);
         renderer.setSurface(surface);
 
-        mCamera = Camera.open();
+        mCamera = getCameraInstance();
 
         try {
             mCamera.setPreviewTexture(surface);
@@ -44,6 +44,19 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
         } catch (IOException ioe) {
             //Log.w("MainActivity", "CAM LAUNCH FAILED");
         }
+    }
+    
+    /**
+     * A safe way to get an instance of the Camera object.
+     */
+    public static Camera getCameraInstance() {
+        Camera c = null;
+        try {
+            c = Camera.open(); // attempt to get a Camera instance
+        } catch (Exception e) {
+            // Camera is not available (in use or does not exist)
+        }
+        return c; // returns null if camera is unavailable
     }
 
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {

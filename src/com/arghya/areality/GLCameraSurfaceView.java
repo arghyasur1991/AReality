@@ -14,24 +14,24 @@ import android.opengl.GLSurfaceView;
  *
  * @author sur
  */
-public class MyGLSurfaceView extends GLSurfaceView {
+public class GLCameraSurfaceView extends GLSurfaceView {
 
-    MyGL20Renderer renderer;
+    GLCameraRenderer renderer;
 
-    public MyGLSurfaceView(Context context) {
+    public GLCameraSurfaceView(Context context) {
         super(context);
 
         setEGLContextClientVersion(2);
         getHolder().setFormat(PixelFormat.TRANSLUCENT);
 
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-        renderer = new MyGL20Renderer((MainActivity) context);
+        renderer = new GLCameraRenderer((MainActivity) context);
         setRenderer(renderer);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
     }
 
-    public MyGL20Renderer getRenderer() {
+    public GLCameraRenderer getRenderer() {
         return renderer;
     }
 }
