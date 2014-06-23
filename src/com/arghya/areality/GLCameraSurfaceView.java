@@ -20,9 +20,9 @@ public class GLCameraSurfaceView extends GLSurfaceView {
 
     public GLCameraSurfaceView(Context context) {
         super(context);
-
+        
+        setZOrderMediaOverlay(true);
         setEGLContextClientVersion(2);
-        setZOrderOnTop(true);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         
         getHolder().setFormat(PixelFormat.RGBA_8888);

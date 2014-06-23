@@ -9,12 +9,14 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import java.io.IOException;
 
 public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvailableListener {
 
     private Camera mCamera;
     private GLCameraSurfaceView glSurfaceView;
+    private ImageSurfaceView imageSurfaceView;
     private SurfaceTexture surface;
     GLCameraRenderer renderer;
 
@@ -23,12 +25,20 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
         super.onCreate(savedInstanceState);
 
         glSurfaceView = new GLCameraSurfaceView(this);
+        imageSurfaceView = new ImageSurfaceView(this);
         renderer = glSurfaceView.getRenderer();
         
         setContentView(R.layout.main);
         
         FrameLayout layout = (FrameLayout) findViewById(R.id.mainFrame);
+        layout.addView(imageSurfaceView);
         layout.addView(glSurfaceView);
+        
+        RelativeLayout newLayout = new RelativeLayout(this);
+        Button b = new Button(this);
+        b.setText("click");
+        newLayout.addView(b);
+        layout.addView(newLayout);
     }
 
     public void startCamera(int texture) {
