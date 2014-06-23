@@ -50,7 +50,7 @@ public class DirectVideo {
         textureVerticesBuffer = OpenGLESUtility.createBuffer(textureVertices);
 
         int vertexShader = OpenGLESUtility.loadShader(GLES20.GL_VERTEX_SHADER, Shaders.VertexShader.normal());
-        int fragmentShader = OpenGLESUtility.loadShader(GLES20.GL_FRAGMENT_SHADER, Shaders.FragmentShader.texture());
+        int fragmentShader = OpenGLESUtility.loadShader(GLES20.GL_FRAGMENT_SHADER, Shaders.FragmentShader.textureChromaKey());
         
         mProgram = GLES20.glCreateProgram();             // create empty OpenGL ES Program
         GLES20.glEnable(GLES20.GL_BLEND);
@@ -72,6 +72,11 @@ public class DirectVideo {
         GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
         GLES20.glVertexAttribPointer(mTextureCoordHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, 
                                 false, vertexStride, textureVerticesBuffer);
+        
+        float key[] = {0.0f, 0.0f, 1.0f, 0.5f};
+        
+        int chromaKeyHandle = GLES20.glGetUniformLocation(mProgram, "key");
+        GLES20.glUniform4fv(chromaKeyHandle, 1, key, 0);
         
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
                 GLES20.GL_UNSIGNED_SHORT, drawListBuffer);

@@ -77,7 +77,7 @@ public class Shaders {
                     + "void main() {"
                     + "vec4 Ca = texture2D(s_texture, textureCoordinate); \n"
                     + "float lum = 0.2126 * Ca.r + 0.7152 * Ca.g + 0.0722 * Ca.b; \n"
-                    + "float alpha = 1.0; \n"
+                    + "float alpha = 0.5; \n"
                     + "  gl_FragColor = vec4(lum, lum, lum, alpha);\n"
                     + "}";
             return fragmentShaderCode;
@@ -89,10 +89,15 @@ public class Shaders {
                     + "precision mediump float;"
                     + "varying vec2 textureCoordinate;                            \n"
                     + "uniform samplerExternalOES s_texture;               \n"
+                    + "uniform vec4 key;               \n"
                     + "void main() {"
                     + "vec4 Ca = texture2D(s_texture, textureCoordinate); \n"
                     + "float alpha = 1.0; \n"
-                    + "if(Ca.r < 0.8 && Ca.g < 0.8 && Ca.b > 0.7) \n"
+                    + "float threshold = key.a; \n"
+                    + "float redDiff = key.r - Ca.r; \n"
+                    + "float greenDif = key.g - Ca.g; \n"
+                    + "float blueDiff = key.b - Ca.b; \n"
+                    + "if(abs(redDiff) < threshold && abs(greenDif) < threshold && abs(blueDiff) < threshold) \n"
                     + "alpha = 0.0; \n"
                     + "  gl_FragColor = vec4(Ca.r, Ca.g, Ca.b, alpha);\n"
                     + "}";

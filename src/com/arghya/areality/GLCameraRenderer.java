@@ -29,7 +29,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     }
 
     public void onSurfaceCreated(GL10 unused, javax.microedition.khronos.egl.EGLConfig config) {
-        texture = createTexture();
+        texture = createExternalTexture();
         mDirectVideo = new DirectVideo();
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         delegate.startCamera(texture);
@@ -52,7 +52,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
     }
 
-    static private int createTexture() {
+    private static int createExternalTexture() {
         int[] texture = new int[1];
 
         GLES20.glGenTextures(1, texture, 0);

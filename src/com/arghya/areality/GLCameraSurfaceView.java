@@ -22,9 +22,11 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         super(context);
 
         setEGLContextClientVersion(2);
-        getHolder().setFormat(PixelFormat.TRANSLUCENT);
-
+        setZOrderOnTop(true);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        
+        getHolder().setFormat(PixelFormat.RGBA_8888);
+        
         renderer = new GLCameraRenderer((MainActivity) context);
         setRenderer(renderer);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);

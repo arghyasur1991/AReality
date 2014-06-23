@@ -6,6 +6,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import java.io.IOException;
@@ -28,7 +29,6 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
         
         FrameLayout layout = (FrameLayout) findViewById(R.id.mainFrame);
         layout.addView(glSurfaceView);
-        glSurfaceView.setZOrderOnTop(true);
     }
 
     public void startCamera(int texture) {
