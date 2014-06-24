@@ -103,5 +103,26 @@ public class Shaders {
                     + "}";
             return fragmentShaderCode;
         }
+        
+        public static String textureChromaKeyYUV() {
+            final String fragmentShaderCode
+                    = "#extension GL_OES_EGL_image_external : require\n"
+                    + "precision mediump float;"
+                    + "varying vec2 textureCoordinate;                            \n"
+                    + "uniform samplerExternalOES s_texture;               \n"
+                    + "uniform vec4 key;               \n"
+                    + "void main() {"
+                    + "vec4 Ca = texture2D(s_texture, textureCoordinate); \n"
+                    + "float yDiff = 0.299 * (Ca.r - key.r) + 0.587 * (Ca.g - key.g) + 0.114 * (Ca.b - key.b); \n"
+                    + "float uDiff = -0.1471 * (Ca.r - key.r) - 0.28886 * (Ca.g - key.g) + 0.436 * (Ca.b - key.b); \n"
+                    + "float vDiff = 0.615 * (Ca.r - key.r) - 0.51499 * (Ca.g - key.g) - 0.10001 * (Ca.b - key.b); \n"
+                    + "float alpha = 1.0; \n"
+                    + "float threshold = key.a; \n"
+                    + "if(abs(yDiff) < 0.2 && abs(uDiff) < 0.15 && abs(vDiff) < 0.15) \n"
+                    + "alpha = 0.0; \n"
+                    + "  gl_FragColor = vec4(Ca.r, Ca.g, Ca.b, alpha);\n"
+                    + "}";
+            return fragmentShaderCode;
+        }
     }
 }
