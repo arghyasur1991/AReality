@@ -20,8 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -31,29 +29,38 @@ public class Screenshot {
     private Bitmap mCameraPreviewBmp;
     private Bitmap mVideoViewBmp;
     
-    private MediaMetadataRetriever mMediaMetadataRetriever;
-    private MediaController mMediaController;
+    private final MediaMetadataRetriever mMediaMetadataRetriever;
+    private final MediaController mMediaController;
     
+    private final GLCameraSurfaceView mCameraView;
+    private final BackgroundVideoView mVideoView;
     
-    private GLCameraSurfaceView mCameraView;
-    private BackgroundVideoView mVideoView;
+    private final Bitmap mResultBmp;
+    private final MainActivity mContext;
+    private final Canvas mCanvas;
     
-    private Bitmap mResultBmp;
-    private Context mContext;
-    private Canvas mCanvas;
+    private final int width;
+    private final int height;
+    
+    private String mSaveLocation;
     
     public Screenshot(Context context, GLCameraSurfaceView cameraView, BackgroundVideoView videoView) {
-        mContext = context;
+        mContext = (MainActivity)context;
         mCameraView = cameraView;
         mVideoView = videoView;
+        
+        mSaveLocation = "Screens";
         
         mMediaMetadataRetriever = new MediaMetadataRetriever();
         mMediaMetadataRetriever.setDataSource(mVideoView.getPath());
 
-        mMediaController = new MediaController(context);
+        mMediaController = new MediaController(mContext);
         mVideoView.setMediaController(mMediaController);
         
-        mResultBmp = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        width = mContext.getWidth();
+        height = mContext.getHeight();
+        
+        mResultBmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         
         mCanvas = new Canvas(mResultBmp);
     }
@@ -70,11 +77,11 @@ public class Screenshot {
     }
     
     public int getWidth() {
-        return ((MainActivity) mContext).width;
+        return width;
     }
     
     public int getHeight() {
-        return ((MainActivity) mContext).height;
+        return height;
     }
     
     public void setCameraBitmap(Bitmap bmp) {
@@ -82,10 +89,14 @@ public class Screenshot {
         writeScreenShot();
     }
     
+    public void setSaveLocation(String newLocation) {
+        mSaveLocation = newLocation;
+    }
+    
     private void writeScreenShot() {
         if (mVideoViewBmp != null) {
             Rect src = new Rect(0, 0, mVideoViewBmp.getWidth(), mVideoViewBmp.getHeight());
-            Rect dest = new Rect(0, 0, getWidth(), getHeight());
+            Rect dest = new Rect(0, 0, width, height);
             mCanvas.drawBitmap(mVideoViewBmp, src, dest, null);
         }
 
@@ -112,7 +123,8 @@ public class Screenshot {
     }
 
     private void writeBitmapToFile(Bitmap bitmap) throws IOException {
-        String mPath = Environment.getExternalStorageDirectory() + File.separator + "screen_" + System.currentTimeMillis() + ".png";
+        String mPath = Environment.getExternalStorageDirectory() + File.separator + 
+                        mSaveLocation + File.separator +"screen_" + System.currentTimeMillis() + ".png";
         File imageFile = new File(mPath);
         OutputStream fout = null;
         try {
@@ -120,11 +132,12 @@ public class Screenshot {
             bitmap.compress(Bitmap.CompressFormat.PNG, 90, fout);
             fout.flush();
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } finally {
-            fout.close();
+            if(fout != null)
+                fout.close();
         }
     }
 }

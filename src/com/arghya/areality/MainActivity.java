@@ -35,14 +35,16 @@ import java.util.logging.Logger;
 public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvailableListener {
 
     private Camera mCamera;
+    
     private GLCameraSurfaceView glSurfaceView;
-    private ImageSurfaceView imageSurfaceView;
+    //private ImageSurfaceView imageSurfaceView;
     private BackgroundVideoView videoView;
+    
     private SurfaceTexture surface;
-    GLCameraRenderer renderer;
-    public static boolean capture;
-    public static int width;
-    public static int height;
+    private GLCameraRenderer renderer;
+    
+    private int width;
+    private int height;
     
     Screenshot mScreenshot;
 
@@ -58,7 +60,7 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
         height = size.y;
 
         glSurfaceView = new GLCameraSurfaceView(this);
-        imageSurfaceView = new ImageSurfaceView(this);
+        //imageSurfaceView = new ImageSurfaceView(this);
         videoView = new BackgroundVideoView(this);
 
         String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
@@ -67,36 +69,28 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
         mScreenshot = new Screenshot(this, glSurfaceView, videoView);
         videoView.start();
 
-        
         renderer = glSurfaceView.getRenderer();
         
         setContentView(R.layout.main);
         
         FrameLayout layout = (FrameLayout) findViewById(R.id.mainFrame);
+        
         //layout.addView(imageSurfaceView);
         layout.addView(videoView);
         layout.addView(glSurfaceView);
         
-        RelativeLayout newLayout = new RelativeLayout(this);
-        Button b = new Button(this);
-        b.setText("click");
-        setButtonOnClick(b,
+        RelativeLayout newLayout = (RelativeLayout) findViewById(R.id.UILayout);
+        Button capture = (Button) findViewById(R.id.CaptureScreen);
+        setButtonOnClick(capture,
                 new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        if(!capture)
-                            capture = true;
-                        
                         mScreenshot.capture();
-                        
-                        
                     }
                 });
         
-        newLayout.addView(b);
-        
-        layout.addView(newLayout);
+        layout.bringChildToFront(newLayout);
     }
     
     private void setButtonOnClick(Button button, View.OnClickListener onClickListener) {
@@ -120,10 +114,18 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
         }
     }
     
+    public int getWidth() {
+        return width;
+    }
+    
+    public int getHeight() {
+        return height;
+    }
+    
     /**
      * A safe way to get an instance of the Camera object.
      */
-    public static Camera getCameraInstance() {
+    private Camera getCameraInstance() {
         Camera c = null;
         try {
             c = Camera.open(); // attempt to get a Camera instance

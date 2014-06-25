@@ -5,5 +5,19 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">
     
+    <RelativeLayout 
+        android:id="@+id/UILayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        
+        <Button 
+            android:id="@+id/CaptureScreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capture">
+        </Button>
+        
+    </RelativeLayout>
+    
 </FrameLayout>
 

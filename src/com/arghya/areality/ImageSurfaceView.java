@@ -42,9 +42,7 @@ public class ImageSurfaceView extends SurfaceView{
         bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
         
         src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
-        dest = new Rect(0, 0, mContext.width, mContext.height);
-        
-        final ImageSurfaceView view = this;
+        dest = new Rect(0, 0, mContext.getWidth(), mContext.getHeight());
         
         holder.addCallback(new SurfaceHolder.Callback() {
             @Override
