@@ -7,8 +7,6 @@
 package com.arghya.areality;
 
 import android.opengl.GLES20;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
@@ -18,8 +16,8 @@ import java.nio.ShortBuffer;
  */
 public class DirectVideo {
     
-    private FloatBuffer vertexBuffer, textureVerticesBuffer;
-    private ShortBuffer drawListBuffer;
+    private final FloatBuffer vertexBuffer, textureVerticesBuffer;
+    private final ShortBuffer drawListBuffer;
     private final int mProgram;
     private int mPositionHandle;
     private int mTextureCoordHandle;
@@ -33,7 +31,7 @@ public class DirectVideo {
         1.0f, 1.0f
     };
 
-    private short drawOrder[] = {0, 1, 2, 0, 2, 3}; // order to draw vertices
+    private final short drawOrder[] = {0, 1, 2, 0, 2, 3}; // order to draw vertices
 
     static float textureVertices[] = { // in counterclockwise order:
         0.0f, 0.0f,

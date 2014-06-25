@@ -5,19 +5,13 @@
  */
 
 package com.arghya.areality;
-
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
