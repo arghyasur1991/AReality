@@ -6,10 +6,18 @@
 
 package com.arghya.areality;
 
+import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
@@ -23,6 +31,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     private SurfaceTexture surface;
     MainActivity delegate;
 
+    float[] key = {0, 0, 0, 0};
 
     public GLCameraRenderer(MainActivity _delegate) {
         delegate = _delegate;
@@ -34,6 +43,20 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         delegate.startCamera(texture);
     }
+    
+    public void setKey(Point p)
+    {
+        ByteBuffer bb = ByteBuffer.allocateDirect(4);
+        bb.order(ByteOrder.nativeOrder());
+        bb.position(0);
+        GLES20.glReadPixels(p.x, p.y , 1, 1, GLES20.GL_RGBA,
+                GLES20.GL_UNSIGNED_BYTE, bb);
+        byte b[] = new byte[4];
+        bb.get(b);
+        key[0] = (float)(bb.get(0) & 0xFF)/ 255.0f;
+        key[1] = (float)(bb.get(1) & 0xFF)/ 255.0f;
+        key[2] = (float)(bb.get(2) & 0xFF)/ 255.0f;
+    }
 
     public void onDrawFrame(GL10 gl) {
         float[] mtx = new float[16];
@@ -42,7 +65,49 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         surface.updateTexImage();
         surface.getTransformMatrix(mtx);
         
-        mDirectVideo.draw();
+        mDirectVideo.draw(key);
+        
+        if (delegate.capture) {
+            int width = delegate.width;
+            int height = delegate.height;
+            int screenshotSize = width * height;
+            ByteBuffer bb = ByteBuffer.allocateDirect(screenshotSize * 4);
+            bb.order(ByteOrder.nativeOrder());
+            GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA,
+                    GLES20.GL_UNSIGNED_BYTE, bb);
+            //gl.glReadPixels(0, 0, width, height, GL10.GL_RGBA,
+            //       GL10.GL_UNSIGNED_BYTE, bb);
+            int pixelsBuffer[] = new int[screenshotSize];
+            bb.asIntBuffer().get(pixelsBuffer);
+            bb = null;
+            Bitmap bitmap = Bitmap.createBitmap(width, height,
+                    Bitmap.Config.RGB_565);
+            bitmap.setPixels(pixelsBuffer, screenshotSize - width, -width, 0,
+                    0, width, height);
+            pixelsBuffer = null;
+
+            short sBuffer[] = new short[screenshotSize];
+            ShortBuffer sb = ShortBuffer.wrap(sBuffer);
+            bitmap.copyPixelsToBuffer(sb);
+
+            // Making created bitmap (from OpenGL points) compatible with
+            // Android bitmap
+            for (int i = 0; i < screenshotSize; ++i) {
+                short v = sBuffer[i];
+                sBuffer[i] = (short) (((v & 0x1f) << 11) | (v & 0x7e0) | ((v & 0xf800) >> 11));
+            }
+            sb.rewind();
+            bitmap.copyPixelsFromBuffer(sb);
+            try {
+                delegate.takeScreen(bitmap);
+            } catch (IOException ex) {
+                //Logger.getLogger(GLCameraRenderer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            delegate.capture = false;
+        }
+        
+        
+        
     }
 
     public void onSurfaceChanged(GL10 gl, int width, int height) {

@@ -60,7 +60,7 @@ public class DirectVideo {
         GLES20.glLinkProgram(mProgram);
     }
 
-    public void draw() {
+    public void draw(float[] key) {
         GLES20.glUseProgram(mProgram);
         
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "position");
@@ -73,7 +73,7 @@ public class DirectVideo {
         GLES20.glVertexAttribPointer(mTextureCoordHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, 
                                 false, vertexStride, textureVerticesBuffer);
         
-        float key[] = {0.121f, 0.275f, 0.738f, 0.5f};
+        //float key[] = {0.121f, 0.275f, 0.738f, 0.5f};
         
         int chromaKeyHandle = GLES20.glGetUniformLocation(mProgram, "key");
         GLES20.glUniform4fv(chromaKeyHandle, 1, key, 0);

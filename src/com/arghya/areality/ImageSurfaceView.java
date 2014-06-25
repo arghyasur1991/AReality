@@ -18,6 +18,9 @@ import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,26 +31,22 @@ public class ImageSurfaceView extends SurfaceView{
     private final Bitmap bmp;
     private final Rect src;
     private final Rect dest;
-    private final Context mContext;
+    private final MainActivity mContext;
     private final SurfaceHolder holder;
 
     public ImageSurfaceView(Context context) {
         super(context);
-        mContext = context;
+        mContext = (MainActivity) context;
         holder = getHolder();
-        
-        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
         
         bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
         
         src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
-        dest = new Rect(0, 0, size.x, size.y);
+        dest = new Rect(0, 0, mContext.width, mContext.height);
+        
+        final ImageSurfaceView view = this;
         
         holder.addCallback(new SurfaceHolder.Callback() {
-
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
             }
@@ -70,5 +69,6 @@ public class ImageSurfaceView extends SurfaceView{
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.BLACK);
         canvas.drawBitmap(bmp, src, dest , null);
+        
     }
 }
