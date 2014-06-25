@@ -70,44 +70,15 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         if (delegate.capture) {
             int width = delegate.width;
             int height = delegate.height;
-            int screenshotSize = width * height;
-            ByteBuffer bb = ByteBuffer.allocateDirect(screenshotSize * 4);
-            bb.order(ByteOrder.nativeOrder());
-            GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA,
-                    GLES20.GL_UNSIGNED_BYTE, bb);
-            //gl.glReadPixels(0, 0, width, height, GL10.GL_RGBA,
-            //       GL10.GL_UNSIGNED_BYTE, bb);
-            int pixelsBuffer[] = new int[screenshotSize];
-            bb.asIntBuffer().get(pixelsBuffer);
-            bb = null;
-            Bitmap bitmap = Bitmap.createBitmap(width, height,
-                    Bitmap.Config.RGB_565);
-            bitmap.setPixels(pixelsBuffer, screenshotSize - width, -width, 0,
-                    0, width, height);
-            pixelsBuffer = null;
-
-            short sBuffer[] = new short[screenshotSize];
-            ShortBuffer sb = ShortBuffer.wrap(sBuffer);
-            bitmap.copyPixelsToBuffer(sb);
-
-            // Making created bitmap (from OpenGL points) compatible with
-            // Android bitmap
-            for (int i = 0; i < screenshotSize; ++i) {
-                short v = sBuffer[i];
-                sBuffer[i] = (short) (((v & 0x1f) << 11) | (v & 0x7e0) | ((v & 0xf800) >> 11));
-            }
-            sb.rewind();
-            bitmap.copyPixelsFromBuffer(sb);
+            Bitmap bitmap = OpenGLESUtility.getGLBitmap(width, height);
+            
             try {
-                delegate.takeScreen(bitmap);
+                MainActivity.takeScreen(bitmap);
             } catch (IOException ex) {
                 //Logger.getLogger(GLCameraRenderer.class.getName()).log(Level.SEVERE, null, ex);
             }
             delegate.capture = false;
         }
-        
-        
-        
     }
 
     public void onSurfaceChanged(GL10 gl, int width, int height) {

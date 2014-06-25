@@ -98,55 +98,10 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
         return returnedBitmap;
     }
     
-    public void takeScreen(View v) throws IOException {
-        Bitmap bitmap = loadBitmapFromView(this, v); //get Bitmap from the view
-        String mPath = Environment.getExternalStorageDirectory() + File.separator + "screen_" + System.currentTimeMillis() + ".jpeg";
-        File imageFile = new File(mPath);
-        OutputStream fout = null;
-        try {
-            fout = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 90, fout);
-            fout.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            fout.close();
-        }
-    }
-    
-    public void takeScreen(Bitmap bitmap) throws IOException {
+    public static void takeScreen(Bitmap bitmap) throws IOException {
         String mPath = Environment.getExternalStorageDirectory() + File.separator + "screen_" + System.currentTimeMillis() + ".png";
         File imageFile = new File(mPath);
         OutputStream fout = null;
-        try {
-            fout = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 90, fout);
-            fout.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            fout.close();
-        }
-    }
-
-    public void takeScreen(View v, boolean b) throws IOException {
-        // image naming and path  to include sd card  appending name you choose for file
-        String mPath = Environment.getExternalStorageDirectory() + File.separator + "screen_" + System.currentTimeMillis() + ".jpeg";
-
-// create bitmap screen capture
-        Bitmap bitmap;
-        View v1 = v.getRootView();
-        v1.setDrawingCacheEnabled(true);
-        bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-        v1.setDrawingCacheEnabled(false);
-
-        OutputStream fout = null;
-        File imageFile = new File(mPath);
-
         try {
             fout = new FileOutputStream(imageFile);
             bitmap.compress(Bitmap.CompressFormat.PNG, 90, fout);
