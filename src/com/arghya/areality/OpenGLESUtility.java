@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 /**
@@ -61,6 +62,29 @@ public class OpenGLESUtility {
     }
     
     public static Bitmap getGLBitmap(int width, int height) {
+        int b[] = new int[width * height];
+        int bt[] = new int[width * height];
+        IntBuffer ib = IntBuffer.wrap(b);
+        ib.position(0);
+        GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib);
+
+        /*  remember, that OpenGL bitmap is incompatible with 
+         Android bitmap and so, some correction need.
+         */
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int pix = b[i * width + j];
+                int pb = (pix >> 16) & 0xff;
+                int pr = (pix << 16) & 0x00ff0000;
+                int pix1 = (pix & 0xff00ff00) | pr | pb;
+                bt[(height - i - 1) * width + j] = pix1;
+            }
+        }
+        Bitmap sb = Bitmap.createBitmap(bt, width, height, Bitmap.Config.ARGB_8888);
+        return sb;
+    }
+    
+    public static Bitmap getGLBitmapNonAlpha(int width, int height) {
         int screenshotSize = width * height;
         ByteBuffer bb = ByteBuffer.allocateDirect(screenshotSize * 4);
         bb.order(ByteOrder.nativeOrder());
@@ -70,6 +94,9 @@ public class OpenGLESUtility {
         //       GL10.GL_UNSIGNED_BYTE, bb);
         int pixelsBuffer[] = new int[screenshotSize];
         bb.asIntBuffer().get(pixelsBuffer);
+        for(int i = 0; i < screenshotSize; i++) {
+            pixelsBuffer[i] = Integer.rotateRight(pixelsBuffer[i], 8);
+        }
         bb = null;
         Bitmap bitmap = Bitmap.createBitmap(width, height,
                 Bitmap.Config.RGB_565);

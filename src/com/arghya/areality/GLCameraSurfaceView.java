@@ -7,6 +7,7 @@
 package com.arghya.areality;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
@@ -38,6 +39,16 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         return renderer;
     }
     
+    public void capture(final Screenshot screenShot) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                Bitmap bmp = OpenGLESUtility.getGLBitmap(screenShot.getWidth(), screenShot.getHeight());
+                screenShot.setCameraBitmap(bmp);
+            }
+        });
+    }
+    
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event != null) {
@@ -46,12 +57,9 @@ public class GLCameraSurfaceView extends GLSurfaceView {
                     // Ensure we call switchMode() on the OpenGL thread.
                     // queueEvent() is a method of GLSurfaceView that will do this for us.
                     
-                    float x = event.getX();
-                    float y = event.getY();
-                    
                     final Point p = new Point();
-                    p.x = (int)x;
-                    p.y = (int)y;
+                    p.x = (int)event.getX();
+                    p.y = (int)event.getY();
                     
                     queueEvent(new Runnable() {
                         @Override

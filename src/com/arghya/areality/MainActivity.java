@@ -43,9 +43,8 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
     public static boolean capture;
     public static int width;
     public static int height;
-    MediaMetadataRetriever mediaMetadataRetriever ;
-    MediaController myMediaController;
     
+    Screenshot mScreenshot;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,12 +63,8 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
 
         String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
         videoView.setVideoURI(Uri.parse(fileName));
-        mediaMetadataRetriever = new MediaMetadataRetriever();
-        mediaMetadataRetriever.setDataSource(fileName);
         
-        myMediaController = new MediaController(this);
-        videoView.setMediaController(myMediaController);
-        
+        mScreenshot = new Screenshot(this, glSurfaceView, videoView);
         videoView.start();
 
         
@@ -93,24 +88,9 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
                         if(!capture)
                             capture = true;
                         
-                        /*try {
-                            takeScreen(renderer.capture());
-                            
-                            //int currentPosition = videoView.getCurrentPosition(); //in millisecond
-                            
-                            Bitmap bmFrame = mediaMetadataRetriever.getFrameAtTime(currentPosition * 1000); //unit in microsecond
-                            
-                            if (bmFrame != null)
-                            {
-                            try {
-                            takeScreen(bmFrame);
-                            } catch (IOException ex) {
-                            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                            }
-                        } catch (IOException ex) {
-                            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
-                        }*/
+                        mScreenshot.capture();
+                        
+                        
                     }
                 });
         
@@ -122,36 +102,6 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
     private void setButtonOnClick(Button button, View.OnClickListener onClickListener) {
         if (button != null) {
             button.setOnClickListener(onClickListener);
-        }
-    }
-    
-    public static Bitmap loadBitmapFromView(Context context, View v) {
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        v.measure(MeasureSpec.makeMeasureSpec(dm.widthPixels, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(dm.heightPixels, MeasureSpec.EXACTLY));
-        v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
-        Bitmap returnedBitmap = Bitmap.createBitmap(v.getMeasuredWidth(),
-                v.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(returnedBitmap);
-        v.draw(c);
-
-        return returnedBitmap;
-    }
-    
-    public static void takeScreen(Bitmap bitmap) throws IOException {
-        String mPath = Environment.getExternalStorageDirectory() + File.separator + "screen_" + System.currentTimeMillis() + ".png";
-        File imageFile = new File(mPath);
-        OutputStream fout = null;
-        try {
-            fout = new FileOutputStream(imageFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 90, fout);
-            fout.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            fout.close();
         }
     }
     

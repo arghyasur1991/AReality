@@ -66,9 +66,9 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         surface.getTransformMatrix(mtx);
         
         mDirectVideo.draw(key);
-        capture();
+        //capture();
     }
-    
+    /*
     public void capture()
     {
         if (delegate.capture) {
@@ -83,7 +83,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
             }
             delegate.capture = false;
         }
-    }
+    }*/
 
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         if (height == 0) {       //Prevent A Divide By Zero By
