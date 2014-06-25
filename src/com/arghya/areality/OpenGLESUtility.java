@@ -81,7 +81,7 @@ public class OpenGLESUtility {
         ShortBuffer sb = ShortBuffer.wrap(sBuffer);
         bitmap.copyPixelsToBuffer(sb);
 
-            // Making created bitmap (from OpenGL points) compatible with
+        // Making created bitmap (from OpenGL points) compatible with
         // Android bitmap
         for (int i = 0; i < screenshotSize; ++i) {
             short v = sBuffer[i];

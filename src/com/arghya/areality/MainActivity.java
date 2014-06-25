@@ -7,6 +7,8 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.DisplayMetrics;
@@ -18,7 +20,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,11 +37,14 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
     private Camera mCamera;
     private GLCameraSurfaceView glSurfaceView;
     private ImageSurfaceView imageSurfaceView;
+    private BackgroundVideoView videoView;
     private SurfaceTexture surface;
     GLCameraRenderer renderer;
     public static boolean capture;
     public static int width;
     public static int height;
+    MediaMetadataRetriever mediaMetadataRetriever ;
+    MediaController myMediaController;
     
 
     @Override
@@ -53,12 +60,26 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
 
         glSurfaceView = new GLCameraSurfaceView(this);
         imageSurfaceView = new ImageSurfaceView(this);
+        videoView = new BackgroundVideoView(this);
+
+        String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
+        videoView.setVideoURI(Uri.parse(fileName));
+        mediaMetadataRetriever = new MediaMetadataRetriever();
+        mediaMetadataRetriever.setDataSource(fileName);
+        
+        myMediaController = new MediaController(this);
+        videoView.setMediaController(myMediaController);
+        
+        videoView.start();
+
+        
         renderer = glSurfaceView.getRenderer();
         
         setContentView(R.layout.main);
         
         FrameLayout layout = (FrameLayout) findViewById(R.id.mainFrame);
-        layout.addView(imageSurfaceView);
+        //layout.addView(imageSurfaceView);
+        layout.addView(videoView);
         layout.addView(glSurfaceView);
         
         RelativeLayout newLayout = new RelativeLayout(this);
@@ -71,6 +92,25 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
                     public void onClick(View v) {
                         if(!capture)
                             capture = true;
+                        
+                        /*try {
+                            takeScreen(renderer.capture());
+                            
+                            //int currentPosition = videoView.getCurrentPosition(); //in millisecond
+                            
+                            Bitmap bmFrame = mediaMetadataRetriever.getFrameAtTime(currentPosition * 1000); //unit in microsecond
+                            
+                            if (bmFrame != null)
+                            {
+                            try {
+                            takeScreen(bmFrame);
+                            } catch (IOException ex) {
+                            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            }
+                        } catch (IOException ex) {
+                            Logger.getLogger(MainActivity.class.getName()).log(Level.SEVERE, null, ex);
+                        }*/
                     }
                 });
         
@@ -154,6 +194,7 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
             mCamera.stopPreview();
             mCamera.release();
         }
+        videoView.stopPlayback();
         System.exit(0);
     
     }

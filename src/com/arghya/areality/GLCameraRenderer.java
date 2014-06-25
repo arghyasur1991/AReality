@@ -66,12 +66,16 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         surface.getTransformMatrix(mtx);
         
         mDirectVideo.draw(key);
-        
+        capture();
+    }
+    
+    public void capture()
+    {
         if (delegate.capture) {
             int width = delegate.width;
             int height = delegate.height;
             Bitmap bitmap = OpenGLESUtility.getGLBitmap(width, height);
-            
+
             try {
                 MainActivity.takeScreen(bitmap);
             } catch (IOException ex) {
