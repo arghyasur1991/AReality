@@ -43,6 +43,9 @@ public class MainActivity extends Activity implements SurfaceTexture.OnFrameAvai
         display.getSize(size);
         width = size.x;
         height = size.y;
+        
+        //testEncoder encoder = new testEncoder();
+        //encoder.testEncodeVideoToMp4();
 
         glSurfaceView = new GLCameraSurfaceView(this);
         //imageSurfaceView = new ImageSurfaceView(this);

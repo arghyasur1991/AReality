@@ -26,19 +26,17 @@ public class Shaders {
             return vertexShaderCode;
         }
         
-        public static String projection() {
-            final String vertexShaderCode =
-                    // This matrix member variable provides a hook to manipulate
-                    // the coordinates of the objects that use this vertex shader
-
-                "uniform mat4 uMVPMatrix;" +
-                "attribute vec4 vPosition;" +
-                "void main() {" +
-                // The matrix must be included as a modifier of gl_Position.
-                // Note that the uMVPMatrix factor *must be first* in order
-                // for the matrix multiplication product to be correct.
-                "  gl_Position = uMVPMatrix * vPosition;" +
-                "}";
+        public static String texture() {
+            final String vertexShaderCode
+                    = "uniform mat4 uMVPMatrix;\n"
+                    + "uniform mat4 uSTMatrix;\n"
+                    + "attribute vec4 aPosition;\n"
+                    + "attribute vec4 aTextureCoord;\n"
+                    + "varying vec2 vTextureCoord;\n"
+                    + "void main() {\n"
+                    + "    gl_Position = uMVPMatrix * aPosition;\n"
+                    + "    vTextureCoord = (uSTMatrix * aTextureCoord).xy;\n"
+                    + "}\n";
 
             return vertexShaderCode;
         }
@@ -59,39 +57,40 @@ public class Shaders {
         public static String texture() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
-                    + "precision mediump float;"
-                    + "varying vec2 textureCoordinate;                            \n"
-                    + "uniform samplerExternalOES s_texture;               \n"
-                    + "void main() {"
-                    + "  gl_FragColor = texture2D( s_texture, textureCoordinate );\n"
-                    + "}";
+                    + "precision mediump float;\n" + // highp here doesn't seem to matter
+                    "varying vec2 vTextureCoord;\n"
+                    + "uniform samplerExternalOES sTexture;\n"
+                    + "void main() {\n"
+                    + "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n"
+                    + "}\n";
             return fragmentShaderCode;
         }
         
         public static String textureBW() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
-                    + "precision mediump float;"
-                    + "varying vec2 textureCoordinate;                            \n"
-                    + "uniform samplerExternalOES s_texture;               \n"
-                    + "void main() {"
-                    + "vec4 Ca = texture2D(s_texture, textureCoordinate); \n"
-                    + "float lum = 0.2126 * Ca.r + 0.7152 * Ca.g + 0.0722 * Ca.b; \n"
-                    + "float alpha = 0.5; \n"
-                    + "  gl_FragColor = vec4(lum, lum, lum, alpha);\n"
-                    + "}";
+                    + "precision mediump float;\n"
+                    + // highp here doesn't seem to matter
+                    "varying vec2 vTextureCoord;\n"
+                    + "uniform samplerExternalOES sTexture;\n"
+                    + "void main() {\n"
+                    + "    vec4 Ca = texture2D(sTexture, vTextureCoord); \n"
+                    + "    float lum = 0.2126 * Ca.r + 0.7152 * Ca.g + 0.0722 * Ca.b; \n"
+                    + "    float alpha = 0.5; \n"
+                    + "    gl_FragColor = vec4(lum, lum, lum, alpha);\n"
+                    + "}\n";
             return fragmentShaderCode;
         }
         
         public static String textureChromaKey() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
-                    + "precision mediump float;"
-                    + "varying vec2 textureCoordinate;                            \n"
-                    + "uniform samplerExternalOES s_texture;               \n"
-                    + "uniform vec4 key;               \n"
-                    + "void main() {"
-                    + "vec4 Ca = texture2D(s_texture, textureCoordinate); \n"
+                    + "precision mediump float;\n"
+                    + // highp here doesn't seem to matter
+                    "varying vec2 vTextureCoord;\n"
+                    + "uniform samplerExternalOES sTexture;\n"
+                    + "void main() {\n"
+                    + "    vec4 Ca = texture2D(sTexture, vTextureCoord); \n"
                     + "float alpha = 1.0; \n"
                     + "float threshold = key.a; \n"
                     + "float redDiff = key.r - Ca.r; \n"
@@ -107,17 +106,18 @@ public class Shaders {
         public static String textureChromaKeyYUV() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
-                    + "precision mediump float;"
-                    + "varying vec2 textureCoordinate;                            \n"
-                    + "uniform samplerExternalOES s_texture;               \n"
-                    + "uniform vec4 key;               \n"
-                    + "void main() {"
-                    + "vec4 Ca = texture2D(s_texture, textureCoordinate); \n"
-                    + "float yDiff = 0.299 * (Ca.r - key.r) + 0.587 * (Ca.g - key.g) + 0.114 * (Ca.b - key.b); \n"
-                    + "float uDiff = -0.1471 * (Ca.r - key.r) - 0.28886 * (Ca.g - key.g) + 0.436 * (Ca.b - key.b); \n"
-                    + "float vDiff = 0.615 * (Ca.r - key.r) - 0.51499 * (Ca.g - key.g) - 0.10001 * (Ca.b - key.b); \n"
+                    + "precision mediump float;\n"
+                    + // highp here doesn't seem to matter
+                    "varying vec2 vTextureCoord;\n"
+                    + "uniform vec4 uKey;\n"
+                    + "uniform samplerExternalOES sTexture;\n"
+                    + "void main() {\n"
+                    + "    vec4 Ca = texture2D(sTexture, vTextureCoord); \n"
+                    + "float yDiff = 0.299 * (Ca.r - uKey.r) + 0.587 * (Ca.g - uKey.g) + 0.114 * (Ca.b - uKey.b); \n"
+                    + "float uDiff = -0.1471 * (Ca.r - uKey.r) - 0.28886 * (Ca.g - uKey.g) + 0.436 * (Ca.b - uKey.b); \n"
+                    + "float vDiff = 0.615 * (Ca.r - uKey.r) - 0.51499 * (Ca.g - uKey.g) - 0.10001 * (Ca.b - uKey.b); \n"
                     + "float alpha = 1.0; \n"
-                    + "float threshold = key.a; \n"
+                    + "float threshold = uKey.a; \n"
                     + "if(abs(yDiff) < 0.2 && abs(uDiff) < 0.15 && abs(vDiff) < 0.15) \n"
                     + "alpha = 0.0; \n"
                     + "  gl_FragColor = vec4(Ca.r, Ca.g, Ca.b, alpha);\n"
