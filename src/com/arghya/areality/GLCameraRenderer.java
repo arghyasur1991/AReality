@@ -25,6 +25,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     MainActivity delegate;
     
     private Square mSquare;
+    //private Square mSquare2;
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
@@ -40,6 +41,8 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 unused, javax.microedition.khronos.egl.EGLConfig config) {
         texture = createExternalTexture();
         mSquare = new Square(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyYUV());
+        //mSquare2 = new Square(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureBW());
+        
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         delegate.startCamera(texture);
     }
@@ -75,6 +78,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         // Draw square
+        //mSquare2.draw(mMVPMatrix, mSTMatrix);
         mSquare.draw(mMVPMatrix, mSTMatrix);
     }
 

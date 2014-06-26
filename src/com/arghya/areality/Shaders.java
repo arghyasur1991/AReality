@@ -123,7 +123,7 @@ public class Shaders {
                     + "void main() {\n"
                     + "    vec4 Ca = texture2D(sTexture, vTextureCoord); \n"
                     + "    float lum = 0.2126 * Ca.r + 0.7152 * Ca.g + 0.0722 * Ca.b; \n"
-                    + "    float alpha = 0.5; \n"
+                    + "    float alpha = 1.0; \n"
                     + "    gl_FragColor = vec4(lum, lum, lum, alpha);\n"
                     + "}\n";
             return fragmentShaderCode;
