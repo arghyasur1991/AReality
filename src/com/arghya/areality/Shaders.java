@@ -6,24 +6,61 @@
 
 package com.arghya.areality;
 
+import android.opengl.GLES20;
+
 /**
  *
  * @author sur
  */
 public class Shaders {
+    private final int mProgram;
+    private final GLCameraRenderer mRenderer;
+    private final VertexShader mVertexShader;
+    private final FragmentShader mFragmentShader;
+    
+    public Shaders(GLCameraRenderer renderer, int program, String vShaderCode, String fShaderCode) {
+        mRenderer = renderer;
+        mProgram = program;
+        int vIndex = 0;
+        int fIndex = 0;
+        
+        if(fShaderCode.equalsIgnoreCase(FragmentShader.texture()))
+            fIndex = 1;
+        else if(fShaderCode.equalsIgnoreCase(FragmentShader.textureBW()))
+            fIndex = 2;
+        else if (fShaderCode.equalsIgnoreCase(FragmentShader.textureChromaKey())) 
+            fIndex = 3;
+        else if (fShaderCode.equalsIgnoreCase(FragmentShader.textureChromaKeyYUV()))
+            fIndex = 4;
+        
+        mVertexShader = new VertexShader(vIndex);
+        mFragmentShader = new FragmentShader(fIndex);
+    }
+    
+    public void doShaderSpecificTasks() {
+        switch(mFragmentShader.getIndex()) {
+            case 0:
+            case 1:
+            case 2:
+                break;
+            case 3:
+            case 4:
+                int chromaKeyHandle = GLES20.glGetUniformLocation(mProgram, "uKey");
+                GLES20.glUniform4fv(chromaKeyHandle, 1, mRenderer.getKey(), 0);
+                break;
+            default:
+        }
+    }
+    
     public static class VertexShader {
-        public static String normal() {
-            final String vertexShaderCode
-                = "attribute vec4 position;"
-                + "attribute vec2 inputTextureCoordinate;"
-                + "varying vec2 textureCoordinate;"
-                + "void main()"
-                + "{"
-                + "gl_Position = position;"
-                + "textureCoordinate = inputTextureCoordinate;"
-                + "}";
-            
-            return vertexShaderCode;
+        private final int mIndex;
+        
+        public VertexShader(int index) {
+            mIndex = index;
+        }
+
+        public int getIndex() {
+            return mIndex;
         }
         
         public static String texture() {
@@ -43,6 +80,16 @@ public class Shaders {
     }
     
     public static class FragmentShader {
+        private final int mIndex;
+
+        public FragmentShader(int index) {
+            mIndex = index;
+        }
+        
+        public int getIndex() {
+            return mIndex;
+        }
+        
         public static String color() {
             final String fragmentShaderCode
                 = "precision mediump float;"
@@ -88,14 +135,15 @@ public class Shaders {
                     + "precision mediump float;\n"
                     + // highp here doesn't seem to matter
                     "varying vec2 vTextureCoord;\n"
+                    + "uniform vec4 uKey;\n"
                     + "uniform samplerExternalOES sTexture;\n"
                     + "void main() {\n"
                     + "    vec4 Ca = texture2D(sTexture, vTextureCoord); \n"
                     + "float alpha = 1.0; \n"
-                    + "float threshold = key.a; \n"
-                    + "float redDiff = key.r - Ca.r; \n"
-                    + "float greenDif = key.g - Ca.g; \n"
-                    + "float blueDiff = key.b - Ca.b; \n"
+                    + "float threshold = uKey.a; \n"
+                    + "float redDiff = uKey.r - Ca.r; \n"
+                    + "float greenDif = uKey.g - Ca.g; \n"
+                    + "float blueDiff = uKey.b - Ca.b; \n"
                     + "if(abs(redDiff) < threshold && abs(greenDif) < threshold && abs(blueDiff) < threshold) \n"
                     + "alpha = 0.0; \n"
                     + "  gl_FragColor = vec4(Ca.r, Ca.g, Ca.b, alpha);\n"

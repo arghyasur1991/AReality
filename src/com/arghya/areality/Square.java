@@ -5,6 +5,7 @@
  */
 package com.arghya.areality;
 
+import android.graphics.Shader;
 import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -22,6 +23,8 @@ public class Square {
     private static final int TRIANGLE_VERTICES_DATA_UV_OFFSET = 3;
     private static final float ASPECT_RATIO = (float) 16/9;
     
+    private Shaders mShader;
+    
     private final float[] mTriangleVerticesData = {
         // X, Y, Z, U, V
         -ASPECT_RATIO, -1.0f, 0, 1.f, 0.f,
@@ -37,14 +40,14 @@ public class Square {
     private int maPositionHandle;
     private int maTextureHandle;
 
-    public Square() {
+    public Square(GLCameraRenderer renderer, String vertexShaderCode, String fragmentShaderCode) {
         mTriangleVertices = ByteBuffer.allocateDirect(
                 mTriangleVerticesData.length * FLOAT_SIZE_BYTES)
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         mTriangleVertices.put(mTriangleVerticesData).position(0);
 
-        int vertexShader = OpenGLESUtility.loadShader(GLES20.GL_VERTEX_SHADER, Shaders.VertexShader.texture());
-        int fragmentShader = OpenGLESUtility.loadShader(GLES20.GL_FRAGMENT_SHADER, Shaders.FragmentShader.textureChromaKeyYUV());
+        int vertexShader = OpenGLESUtility.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
+        int fragmentShader = OpenGLESUtility.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
 
         mProgram = GLES20.glCreateProgram();             // create empty OpenGL ES Program
         GLES20.glEnable(GLES20.GL_BLEND);
@@ -53,6 +56,8 @@ public class Square {
         GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment shader to program
         GLES20.glLinkProgram(mProgram);
         
+        mShader = new Shaders(renderer, mProgram, vertexShaderCode, fragmentShaderCode);
+        
         maPositionHandle = GLES20.glGetAttribLocation(mProgram, "aPosition");
         maTextureHandle = GLES20.glGetAttribLocation(mProgram, "aTextureCoord");
 
@@ -60,7 +65,7 @@ public class Square {
         muSTMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uSTMatrix");
     }
 
-    public void draw(float[] mMVPMatrix, float[] mSTMatrix, float[] key) {
+    public void draw(float[] mMVPMatrix, float[] mSTMatrix) {
         GLES20.glUseProgram(mProgram);
 
         mTriangleVertices.position(TRIANGLE_VERTICES_DATA_POS_OFFSET);
@@ -76,8 +81,7 @@ public class Square {
         GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0);
         GLES20.glUniformMatrix4fv(muSTMatrixHandle, 1, false, mSTMatrix, 0);
         
-        int chromaKeyHandle = GLES20.glGetUniformLocation(mProgram, "uKey");
-        GLES20.glUniform4fv(chromaKeyHandle, 1, key, 0);
+        mShader.doShaderSpecificTasks();
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 
