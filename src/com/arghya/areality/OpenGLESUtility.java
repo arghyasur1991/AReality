@@ -54,13 +54,16 @@ public class OpenGLESUtility {
         }
     }
     
-    public static Bitmap getGLBitmap(int width, int height) {
+    public static int[] getGLBuffer(int width, int height) {
         int b[] = new int[width * height];
-        int bt[] = new int[width * height];
         IntBuffer ib = IntBuffer.wrap(b);
         ib.position(0);
         GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, ib);
-
+        return b;
+    }
+    
+    public static Bitmap getGLBitmap(int[] b, int width, int height) {
+        int bt[] = new int[width * height];
         /*  remember, that OpenGL bitmap is incompatible with 
          Android bitmap and so, some correction need.
          */

@@ -43,8 +43,17 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         queueEvent(new Runnable() {
             @Override
             public void run() {
-                Bitmap bmp = OpenGLESUtility.getGLBitmap(screenShot.getWidth(), screenShot.getHeight());
-                screenShot.setCameraBitmap(bmp);
+                final int[] b = OpenGLESUtility.getGLBuffer(screenShot.getWidth(), screenShot.getHeight());
+                
+                Thread writeScreenThread = new Thread(new Runnable() {
+
+                    public void run() {
+                        Bitmap bmp = OpenGLESUtility.getGLBitmap(b, screenShot.getWidth(), screenShot.getHeight());
+                        screenShot.setCameraBitmap(bmp);
+                    }
+                });
+                
+                writeScreenThread.start();
             }
         });
     }

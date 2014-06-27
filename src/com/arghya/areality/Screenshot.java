@@ -12,6 +12,7 @@ import android.graphics.Canvas;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -60,6 +61,7 @@ public class Screenshot {
         mGLBitmap = bmp;
         try {
             writeBitmapToFile(mGLBitmap);
+            //Toast.makeText(mContext, "Screen Saved", Toast.LENGTH_SHORT).show();
         } catch (IOException ex) {
             //Logger.getLogger(Screenshot.class.getName()).log(Level.SEVERE, null, ex);
         }
