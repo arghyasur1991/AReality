@@ -7,7 +7,6 @@
 package com.arghya.areality;
 
 import android.opengl.GLES20;
-import java.util.ArrayList;
 
 /**
  *

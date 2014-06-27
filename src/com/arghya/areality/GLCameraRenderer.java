@@ -8,7 +8,6 @@ package com.arghya.areality;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -27,11 +26,11 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class GLCameraRenderer implements GLSurfaceView.Renderer {
     ArrayList<Integer> mTextureList;
-    private SurfaceTexture mSurface;
     MainActivity mDelegate;
     
     private Square mSquare;
     private Square mSquare2;
+    
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
@@ -40,8 +39,8 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
 
     float[] mKey = {0, 0, 0, 0};
     
-    private CameraSurface mCameraSurface;
-    private VideoSurface mVideoSurface;
+    private final CameraSurface mCameraSurface;
+    private final VideoSurface mVideoSurface;
 
     public GLCameraRenderer(MainActivity _delegate) {
         mDelegate = _delegate;
@@ -53,7 +52,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 unused, javax.microedition.khronos.egl.EGLConfig config) {
         createExternalTexture();
         createExternalTexture();
-        //createTexture2D();
+        
         String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
 
         mVideoSurface.setMedia(fileName);
@@ -68,8 +67,6 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         
         mCameraSurface.start(mTextureList.get(0));
         mVideoSurface.start(mTextureList.get(1));
-        
-        //mDelegate.startCamera(mTextureList.get(0)[1]);
     }
 
     public float[] getKey() {
@@ -166,10 +163,6 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
                 GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
         mTextureList.add(texture[0]);
-    }
-
-    public void setSurface(SurfaceTexture _surface) {
-        mSurface = _surface;
     }
 
     public void release() {

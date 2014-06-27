@@ -5,12 +5,10 @@
  */
 package com.arghya.areality;
 
-import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 /**
  *
  * @author sur

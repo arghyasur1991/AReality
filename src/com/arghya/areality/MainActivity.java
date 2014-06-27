@@ -3,19 +3,13 @@ package com.arghya.areality;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
-import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import java.io.File;
-import java.io.IOException;
 
 public class MainActivity extends Activity{
     
