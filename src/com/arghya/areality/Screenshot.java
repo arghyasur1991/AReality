@@ -12,7 +12,6 @@ import android.graphics.Canvas;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -59,12 +58,7 @@ public class Screenshot {
     
     public void setCameraBitmap(Bitmap bmp) {
         mGLBitmap = bmp;
-        try {
-            writeBitmapToFile(mGLBitmap);
-            //Toast.makeText(mContext, "Screen Saved", Toast.LENGTH_SHORT).show();
-        } catch (IOException ex) {
-            //Logger.getLogger(Screenshot.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        writeBitmapToFile(mGLBitmap);
     }
     
     public void setSaveLocation(String newLocation) {
@@ -84,7 +78,7 @@ public class Screenshot {
         return returnedBitmap;
     }
 
-    private void writeBitmapToFile(Bitmap bitmap) throws IOException {
+    private void writeBitmapToFile(Bitmap bitmap){
         String mPath = Environment.getExternalStorageDirectory() + File.separator + 
                         mSaveLocation + File.separator +"screen_" + System.currentTimeMillis() + ".png";
         File imageFile = new File(mPath);
@@ -98,8 +92,13 @@ public class Screenshot {
         } catch (IOException e) {
             //e.printStackTrace();
         } finally {
-            if(fout != null)
-                fout.close();
+            if(fout != null) {
+                try {
+                    fout.close();
+                } catch (IOException ex) {
+                    //Logger.getLogger(Screenshot.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
 }
