@@ -75,4 +75,8 @@ public class GLCameraSurfaceView extends GLSurfaceView {
 
         return super.onTouchEvent(event);
     }
+    
+    public void release() {
+        renderer.release();
+    }
 }

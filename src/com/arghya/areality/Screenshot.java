@@ -26,54 +26,29 @@ import java.io.OutputStream;
  * @author sur
  */
 public class Screenshot {
-    private Bitmap mCameraPreviewBmp;
-    private Bitmap mVideoViewBmp;
+    private Bitmap mGLBitmap;
     
-    private final MediaMetadataRetriever mMediaMetadataRetriever;
-    private final MediaController mMediaController;
+    private final GLCameraSurfaceView mGlSurfaceView;
     
-    private final GLCameraSurfaceView mCameraView;
-    private final BackgroundVideoView mVideoView;
-    
-    private final Bitmap mResultBmp;
     private final MainActivity mContext;
-    private final Canvas mCanvas;
     
     private final int width;
     private final int height;
     
     private String mSaveLocation;
     
-    public Screenshot(Context context, GLCameraSurfaceView cameraView, BackgroundVideoView videoView) {
+    public Screenshot(Context context, GLCameraSurfaceView surfaceView) {
         mContext = (MainActivity)context;
-        mCameraView = cameraView;
-        mVideoView = videoView;
+        mGlSurfaceView = surfaceView;
         
         mSaveLocation = "Screens";
         
-        mMediaMetadataRetriever = new MediaMetadataRetriever();
-        mMediaMetadataRetriever.setDataSource(mVideoView.getPath());
-
-        mMediaController = new MediaController(mContext);
-        mVideoView.setMediaController(mMediaController);
-        
         width = mContext.getWidth();
         height = mContext.getHeight();
-        
-        mResultBmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        
-        mCanvas = new Canvas(mResultBmp);
     }
     
     public void capture() {
-        captureVideoFrame();
-        mCameraView.capture(this);
-    }
-    
-    private void captureVideoFrame() {
-        int currentPosition = mVideoView.getCurrentPosition(); //in millisecond
-
-        mVideoViewBmp = mMediaMetadataRetriever.getFrameAtTime(currentPosition * 1000); //unit in microsecond
+        mGlSurfaceView.capture(this);
     }
     
     public int getWidth() {
@@ -85,28 +60,16 @@ public class Screenshot {
     }
     
     public void setCameraBitmap(Bitmap bmp) {
-        mCameraPreviewBmp = bmp;
-        writeScreenShot();
+        mGLBitmap = bmp;
+        try {
+            writeBitmapToFile(mGLBitmap);
+        } catch (IOException ex) {
+            //Logger.getLogger(Screenshot.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void setSaveLocation(String newLocation) {
         mSaveLocation = newLocation;
-    }
-    
-    private void writeScreenShot() {
-        if (mVideoViewBmp != null) {
-            Rect src = new Rect(0, 0, mVideoViewBmp.getWidth(), mVideoViewBmp.getHeight());
-            Rect dest = new Rect(0, 0, width, height);
-            mCanvas.drawBitmap(mVideoViewBmp, src, dest, null);
-        }
-
-        mCanvas.drawBitmap(mCameraPreviewBmp, 0, 0, null);
-
-        try {
-            writeBitmapToFile(mResultBmp);
-        } catch (IOException ex) {
-            //Logger.getLogger(Screenshot.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
     public Bitmap loadBitmapFromView(Context context, View v) {

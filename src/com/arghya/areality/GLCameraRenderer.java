@@ -5,14 +5,20 @@
  */
 
 package com.arghya.areality;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.os.Environment;
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import javax.microedition.khronos.opengles.GL10;
 
 /**
@@ -20,35 +26,54 @@ import javax.microedition.khronos.opengles.GL10;
  * @author sur
  */
 public class GLCameraRenderer implements GLSurfaceView.Renderer {
-    int texture;
-    private SurfaceTexture surface;
-    MainActivity delegate;
+    ArrayList<Integer> mTextureList;
+    private SurfaceTexture mSurface;
+    MainActivity mDelegate;
     
     private Square mSquare;
-    //private Square mSquare2;
+    private Square mSquare2;
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
     private final float[] mRotationMatrix = new float[16];
     private final float[] mSTMatrix = new float[16];
 
-    float[] key = {0, 0, 0, 0};
+    float[] mKey = {0, 0, 0, 0};
+    
+    private CameraSurface mCameraSurface;
+    private VideoSurface mVideoSurface;
 
     public GLCameraRenderer(MainActivity _delegate) {
-        delegate = _delegate;
+        mDelegate = _delegate;
+        mTextureList = new ArrayList<Integer>();
+        mCameraSurface = new CameraSurface(mDelegate);
+        mVideoSurface = new VideoSurface(mDelegate);
     }
 
     public void onSurfaceCreated(GL10 unused, javax.microedition.khronos.egl.EGLConfig config) {
-        texture = createExternalTexture();
-        mSquare = new Square(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyYUV());
-        //mSquare2 = new Square(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureBW());
+        createExternalTexture();
+        createExternalTexture();
+        //createTexture2D();
+        String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
+
+        mVideoSurface.setMedia(fileName);
+        
+        Shaders chromaKeyShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyYUV());
+        mSquare = new Square(0, chromaKeyShader);
+        
+        Shaders textureShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.texture());
+        mSquare2 = new Square(1, textureShader);
         
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        delegate.startCamera(texture);
+        
+        mCameraSurface.start(mTextureList.get(0));
+        mVideoSurface.start(mTextureList.get(1));
+        
+        //mDelegate.startCamera(mTextureList.get(0)[1]);
     }
 
-    float[] getKey() {
-        return key;
+    public float[] getKey() {
+        return mKey;
     }
     
     public void setKey(Point p)
@@ -60,16 +85,18 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
                 GLES20.GL_UNSIGNED_BYTE, bb);
         byte b[] = new byte[4];
         bb.get(b);
-        key[0] = (float)(bb.get(0) & 0xFF)/ 255.0f;
-        key[1] = (float)(bb.get(1) & 0xFF)/ 255.0f;
-        key[2] = (float)(bb.get(2) & 0xFF)/ 255.0f;
+        mKey[0] = (float)(bb.get(0) & 0xFF)/ 255.0f;
+        mKey[1] = (float)(bb.get(1) & 0xFF)/ 255.0f;
+        mKey[2] = (float)(bb.get(2) & 0xFF)/ 255.0f;
     }
 
-    public void onDrawFrame(GL10 gl) {
+    synchronized public void onDrawFrame(GL10 gl) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         
-        surface.updateTexImage();
-        surface.getTransformMatrix(mSTMatrix);
+        mCameraSurface.updateSurface(mSTMatrix);
+        
+        float[] mtx = new float[16];
+        mVideoSurface.updateSurface(mtx);
         
         // Set the camera position (View matrix)
         Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
@@ -78,7 +105,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         // Draw square
-        //mSquare2.draw(mMVPMatrix, mSTMatrix);
+        mSquare2.draw(mMVPMatrix, mtx);
         mSquare.draw(mMVPMatrix, mSTMatrix);
     }
 
@@ -93,13 +120,40 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         // in the onDrawFrame() method
         Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
     }
+    
+    private void createTexture2D() {
+        int[] texture = new int[1];
+        GLES20.glGenTextures(1, texture, 0);
 
-    private static int createExternalTexture() {
+        // Retrieve our image from resources.
+        int id = mDelegate.getResources().getIdentifier("drawable/ic_launcher", null, mDelegate.getPackageName());
+
+        // Temporary create a bitmap
+        Bitmap bmp = BitmapFactory.decodeResource(mDelegate.getResources(), id);
+
+        // Bind texture to texturename
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + mTextureList.size());
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture[0]);
+
+        // Set filtering
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+
+        // Load the bitmap into the bound texture.
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
+
+        // We are done using the bitmap so we should recycle it.
+        bmp.recycle();
+        
+        mTextureList.add(texture[0]);
+    }
+
+    private void createExternalTexture() {
         int[] texture = new int[1];
 
         GLES20.glGenTextures(1, texture, 0);
         
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + mTextureList.size());
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture[0]);
         
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
@@ -111,10 +165,15 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
                 GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 
-        return texture[0];
+        mTextureList.add(texture[0]);
     }
 
     public void setSurface(SurfaceTexture _surface) {
-        surface = _surface;
+        mSurface = _surface;
+    }
+
+    public void release() {
+        mCameraSurface.release();
+        mVideoSurface.release();
     }
 }
