@@ -17,6 +17,7 @@ public class Shaders {
     private final GLCameraRenderer mRenderer;
     private final VertexShader mVertexShader;
     private final FragmentShader mFragmentShader;
+    private int mTextureIndex;
     
     public Shaders(GLCameraRenderer renderer, String vShaderCode, String fShaderCode) {
         mRenderer = renderer;
@@ -38,6 +39,10 @@ public class Shaders {
         mFragmentShader = new FragmentShader(fIndex);
     }
     
+    public void setTextureIndex(int index) {
+        mTextureIndex = index;
+    }
+    
     public String getVertexShaderCode() {
         return mVertexShader.getCode();
     }
@@ -50,7 +55,7 @@ public class Shaders {
         mProgram = program;
     }
     
-    public void doShaderSpecificTasks(int index) {
+    public void doShaderSpecificTasks() {
         int texHandle = GLES20.glGetUniformLocation(mProgram, "sTexture");
         int chromaKeyHandle = GLES20.glGetUniformLocation(mProgram, "uKey");
         
@@ -60,12 +65,12 @@ public class Shaders {
             case 1:
             case 2:
             case 3:
-                GLES20.glUniform1i(texHandle, index);
+                GLES20.glUniform1i(texHandle, mTextureIndex);
                 break;
             case 4:
             case 5:
                 GLES20.glUniform4fv(chromaKeyHandle, 1, mRenderer.getKey(), 0);
-                GLES20.glUniform1i(texHandle, index);
+                GLES20.glUniform1i(texHandle, mTextureIndex);
                 break;
             default:
         }

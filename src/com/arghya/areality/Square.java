@@ -36,11 +36,8 @@ public class Square {
     private final int muSTMatrixHandle;
     private final int maPositionHandle;
     private final int maTextureHandle;
-    
-    private final int mIndex;
 
-    public Square(int index, Shaders shader) {
-        mIndex = index;
+    public Square(Shaders shader) {
         mShader = shader;
         
         mTriangleVertices = ByteBuffer.allocateDirect(
@@ -83,7 +80,7 @@ public class Square {
         GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0);
         GLES20.glUniformMatrix4fv(muSTMatrixHandle, 1, false, mSTMatrix, 0);
         
-        mShader.doShaderSpecificTasks(mIndex);
+        mShader.doShaderSpecificTasks();
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 

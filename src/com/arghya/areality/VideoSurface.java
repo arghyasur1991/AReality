@@ -70,6 +70,7 @@ public class VideoSurface implements SurfaceTexture.OnFrameAvailableListener {
     
     public void release() {
         mMediaPlayer.pause();
+        mMediaPlayer.stop();
         mMediaPlayer.release();
         mSurface.release();
     }

@@ -58,10 +58,12 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         mVideoSurface.setMedia(fileName);
         
         Shaders chromaKeyShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyYUV());
-        mSquare = new Square(0, chromaKeyShader);
+        chromaKeyShader.setTextureIndex(0);
+        mSquare = new Square(chromaKeyShader);
         
         Shaders textureShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.texture());
-        mSquare2 = new Square(1, textureShader);
+        textureShader.setTextureIndex(1);
+        mSquare2 = new Square(textureShader);
         
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         
