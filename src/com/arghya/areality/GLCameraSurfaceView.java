@@ -86,6 +86,11 @@ public class GLCameraSurfaceView extends GLSurfaceView {
     }
     
     public void release() {
-        renderer.release();
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                renderer.release();
+            }
+        });
     }
 }
