@@ -8,24 +8,25 @@ package com.arghya.areality;
 
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import java.util.ArrayList;
 
 /**
  *
  * @author sur
  */
 public class EncoderDrawingObject {
-    private Square mSquare;
+    private ArrayList<Square> mSquareList;
     private float[] mMVPMatrix;
     private float[] mSTMatrix;
     private long mTimeStamp;
-    private int mTextureID;
+    private ArrayList<Integer> mTextureList;
     
-    public EncoderDrawingObject(Square square, float[] mVPMatrix, float[] sTMatrix, long ts, int tId) {
-        mSquare = square;
+    public EncoderDrawingObject(ArrayList<Square> squareList, ArrayList<Integer> textureList, float[] mVPMatrix, float[] sTMatrix, long ts) {
+        mSquareList = squareList;
         mMVPMatrix = mVPMatrix;
         mSTMatrix = sTMatrix;
         mTimeStamp = ts;
-        mTextureID = tId;
+        mTextureList = textureList;
     }
     
     public long getTimeStamp() {
@@ -33,9 +34,11 @@ public class EncoderDrawingObject {
     }
     
     public void draw() {
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTextureID);
-        mSquare.draw(mMVPMatrix, mSTMatrix);
+        for(int i = mSquareList.size() - 1; i >= 0; i--) {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
+            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTextureList.get(i));
+            mSquareList.get(i).draw(mMVPMatrix, mSTMatrix);
+        }
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
     }
 }

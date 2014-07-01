@@ -15,6 +15,7 @@ import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
 import android.util.Log;
 import android.view.Surface;
+import javax.microedition.khronos.egl.EGL10;
 
 /**
  * Core EGL state (display, context, config).
@@ -136,6 +137,7 @@ public final class EglCore {
      * @param version Must be 2 or 3.
      */
     private EGLConfig getConfig(int flags, int version) {
+        //int renderableType = EGL14.EGL_OPENGL_ES2_BIT;
         int renderableType = EGL14.EGL_OPENGL_ES2_BIT;
         if (version >= 3) {
             renderableType |= EGLExt.EGL_OPENGL_ES3_BIT_KHR;
@@ -149,8 +151,9 @@ public final class EglCore {
             EGL14.EGL_GREEN_SIZE, 8,
             EGL14.EGL_BLUE_SIZE, 8,
             EGL14.EGL_ALPHA_SIZE, 8,
-            //EGL14.EGL_DEPTH_SIZE, 16,
-            //EGL14.EGL_STENCIL_SIZE, 8,
+            //EGL14.EGL_ALPHA_MASK_SIZE, 8,
+            EGL14.EGL_DEPTH_SIZE, 16,
+            EGL14.EGL_STENCIL_SIZE, 8,
             EGL14.EGL_RENDERABLE_TYPE, renderableType,
             EGL14.EGL_NONE, 0, // placeholder for recordable [@-3]
             EGL14.EGL_NONE
@@ -230,6 +233,7 @@ public final class EglCore {
         int[] surfaceAttribs = {
             EGL14.EGL_NONE
         };
+        
         EGLSurface eglSurface = EGL14.eglCreateWindowSurface(mEGLDisplay, mEGLConfig, surface,
                 surfaceAttribs, 0);
         checkEglError("eglCreateWindowSurface");
