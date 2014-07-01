@@ -51,6 +51,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     private boolean mRecordingEnabled;
     private int mRecordingStatus;
     private int mFrameCount;
+    private EncoderDrawingObject mEncoderDrawingObject;
     
     private File mOutputFile;
 
@@ -92,6 +93,11 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         chromaKeyBlendShader.setTextureIndex(0);
         mSquareList.add(new Square(chromaKeyBlendShader));
         
+        Shaders shaderForEncoder = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyBlend());
+        shaderForEncoder.setTextureIndex(0);
+
+        mEncoderDrawingObject = new EncoderDrawingObject(new Square(shaderForEncoder), mTextureList);
+        
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         
         mCameraSurface.start(mTextureList.get(0));
@@ -127,9 +133,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         
         mCameraSurface.updateSurface(mSTMatrix);
-        
-        float[] mtx = new float[16];
-        mVideoSurface.updateSurface(mtx);
+        mVideoSurface.updateSurface();
         
         // Set the camera position (View matrix)
         Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
@@ -182,10 +186,9 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         // Tell the video encoder thread that a new frame is available.
         // This will be ignored if we're not actually recording.
         
-        EncoderDrawingObject object = new EncoderDrawingObject(mSquareList, mTextureList,
-                            mMVPMatrix, mSTMatrix, mCameraSurface.getTimeStamp());
+        mEncoderDrawingObject.setData(mMVPMatrix, mSTMatrix, mCameraSurface.getTimeStamp());
         
-        mVideoEncoder.frameAvailable(object);
+        mVideoEncoder.frameAvailable(mEncoderDrawingObject);
         
     }
 

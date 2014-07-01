@@ -63,9 +63,8 @@ public class VideoSurface implements SurfaceTexture.OnFrameAvailableListener {
         return mSurface.getTimestamp();
     }
     
-    public void updateSurface(float[] mSTMatrix) {
+    public void updateSurface() {
         mSurface.updateTexImage();
-        mSurface.getTransformMatrix(mSTMatrix);
     }
     
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {

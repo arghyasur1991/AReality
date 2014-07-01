@@ -192,7 +192,6 @@ public class TextureMovieEncoder implements Runnable {
                 return;
             }
         }
-        long ts = object.getTimeStamp();
         
         if (object.getTimeStamp() == 0) {
             // Seeing this after device is toggled off/on with power button.  The
@@ -312,14 +311,6 @@ public class TextureMovieEncoder implements Runnable {
     }
 
     /**
-     * Sets the texture name that SurfaceTexture will use when frames are received.
-     */
-    private void handleSetTexture(int id) {
-        //Log.d(TAG, "handleSetTexture " + id);
-        mTextureId = id;
-    }
-
-    /**
      * Tears down the EGL surface and context we've been using to feed the MediaCodec input
      * surface, and replaces it with a new one that shares with the new context.
      * <p>
@@ -331,17 +322,12 @@ public class TextureMovieEncoder implements Runnable {
 
         // Release the EGLSurface and EGLContext.
         mInputWindowSurface.releaseEglSurface();
-        //mFullScreen.release(false);
         mEglCore.release();
 
         // Create a new EGLContext and recreate the window surface.
         mEglCore = new EglCore(newSharedContext, EglCore.FLAG_RECORDABLE);
         mInputWindowSurface.recreate(mEglCore);
         mInputWindowSurface.makeCurrent();
-
-        // Create new programs and such for the new context.
-        //mFullScreen = new FullFrameRect(
-        //        new Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT));
     }
 
     private void prepareEncoder(EGLContext sharedContext, int width, int height, int bitRate,
@@ -354,9 +340,6 @@ public class TextureMovieEncoder implements Runnable {
         mEglCore = new EglCore(sharedContext, EglCore.FLAG_RECORDABLE);
         mInputWindowSurface = new WindowSurface(mEglCore, mVideoEncoder.getInputSurface(), true);
         mInputWindowSurface.makeCurrent();
-
-        //mFullScreen = new FullFrameRect(
-        //        new Texture2dProgram(Texture2dProgram.ProgramType.TEXTURE_EXT));
     }
 
     private void releaseEncoder() {
@@ -365,10 +348,6 @@ public class TextureMovieEncoder implements Runnable {
             mInputWindowSurface.release();
             mInputWindowSurface = null;
         }
-        /*if (mFullScreen != null) {
-            mFullScreen.release(false);
-            mFullScreen = null;
-        }*/
         if (mEglCore != null) {
             //mEglCore.release();
             //mEglCore = null;
