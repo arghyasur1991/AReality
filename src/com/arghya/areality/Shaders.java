@@ -6,6 +6,7 @@
 
 package com.arghya.areality;
 
+import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 
 /**
@@ -22,6 +23,7 @@ public class Shaders {
     public Shaders(GLCameraRenderer renderer, String vShaderCode, String fShaderCode) {
         mRenderer = renderer;
         int vIndex = 0;
+        
         int fIndex = 0;
         
         if(fShaderCode.equalsIgnoreCase(FragmentShader.texture()))
@@ -34,6 +36,8 @@ public class Shaders {
             fIndex = 4;
         else if (fShaderCode.equalsIgnoreCase(FragmentShader.textureChromaKeyYUV()))
             fIndex = 5;
+        else if(fShaderCode.equalsIgnoreCase(FragmentShader.textureChromaKeyBlend()))
+            fIndex = 6;  
         
         mVertexShader = new VertexShader(vIndex);
         mFragmentShader = new FragmentShader(fIndex);
@@ -71,6 +75,14 @@ public class Shaders {
             case 5:
                 GLES20.glUniform4fv(chromaKeyHandle, 1, mRenderer.getKey(), 0);
                 GLES20.glUniform1i(texHandle, mTextureIndex);
+                break;
+            case 6:
+                texHandle = GLES20.glGetUniformLocation(mProgram, "sTexture1");
+                int texHandle2 = GLES20.glGetUniformLocation(mProgram, "sTexture2");
+                GLES20.glUniform4fv(chromaKeyHandle, 1, mRenderer.getKey(), 0);
+                
+                GLES20.glUniform1i(texHandle, mTextureIndex);
+                GLES20.glUniform1i(texHandle2, mTextureIndex + 1);
                 break;
             default:
         }
@@ -137,6 +149,8 @@ public class Shaders {
                     return textureChromaKey();
                 case 5: 
                     return textureChromaKeyYUV();
+                case 6:
+                    return textureChromaKeyBlend();
                 default:
                     return "";
             }
@@ -229,6 +243,32 @@ public class Shaders {
                     + "if(abs(yDiff) < 0.2 && abs(uDiff) < 0.15 && abs(vDiff) < 0.15) \n"
                     + "alpha = 0.0; \n"
                     + "  gl_FragColor = vec4(Ca.r, Ca.g, Ca.b, alpha);\n"
+                    + "}";
+            return fragmentShaderCode;
+        }
+        
+        public static String textureChromaKeyBlend() {
+            final String fragmentShaderCode
+                    = "#extension GL_OES_EGL_image_external : require\n"
+                    + "precision mediump float;\n"
+                    + "varying vec2 vTextureCoord;\n"
+                    + "uniform vec4 uKey;\n"
+                    + "uniform samplerExternalOES sTexture1;\n"
+                    + "uniform samplerExternalOES sTexture2;\n"
+                    + "void main() {\n"
+                    + "    vec4 Ca = texture2D(sTexture1, vTextureCoord); \n"
+                    + "    vec4 Cb = texture2D(sTexture2, vTextureCoord); \n"
+                    + "float yDiff = 0.299 * (Ca.r - uKey.r) + 0.587 * (Ca.g - uKey.g) + 0.114 * (Ca.b - uKey.b); \n"
+                    + "float uDiff = -0.1471 * (Ca.r - uKey.r) - 0.28886 * (Ca.g - uKey.g) + 0.436 * (Ca.b - uKey.b); \n"
+                    + "float vDiff = 0.615 * (Ca.r - uKey.r) - 0.51499 * (Ca.g - uKey.g) - 0.10001 * (Ca.b - uKey.b); \n"
+                    + "float alpha = 1.0; \n"
+                    + "float threshold = uKey.a; \n"
+                    + "if(abs(yDiff) < 0.2 && abs(uDiff) < 0.15 && abs(vDiff) < 0.15) \n"
+                    + "alpha = 0.0; \n"
+                    + "float r = Ca.r * alpha + (1.0 - alpha) * Cb.r; \n"
+                    + "float g = Ca.g * alpha + (1.0 - alpha) * Cb.g; \n"
+                    + "float b = Ca.b * alpha + (1.0 - alpha) * Cb.b; \n"
+                    + "  gl_FragColor = vec4(r, g, b, 1.0);\n"
                     + "}";
             return fragmentShaderCode;
         }

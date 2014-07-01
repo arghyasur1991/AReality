@@ -88,13 +88,9 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
 
         mVideoSurface.setMedia(fileName);
         
-        Shaders chromaKeyShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyYUV());
-        chromaKeyShader.setTextureIndex(0);
-        mSquareList.add(new Square(chromaKeyShader));
-        
-        Shaders textureShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.texture());
-        textureShader.setTextureIndex(1);
-        mSquareList.add(new Square(textureShader));
+        Shaders chromaKeyBlendShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyBlend());
+        chromaKeyBlendShader.setTextureIndex(0);
+        mSquareList.add(new Square(chromaKeyBlendShader));
         
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         
@@ -142,7 +138,6 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         // Draw square
-        mSquareList.get(1).draw(mMVPMatrix, mtx);
         mSquareList.get(0).draw(mMVPMatrix, mSTMatrix);
         
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
@@ -183,12 +178,6 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
                     throw new RuntimeException("unknown status " + mRecordingStatus);
             }
         }
-        // Set the video encoder's texture name.  We only need to do this once, but in the
-        // current implementation it has to happen after the video encoder is started, so
-        // we just do it here.
-        //
-        // TODO: be less lame.
-        //mVideoEncoder.setTextureId(mTextureList.get(0));
 
         // Tell the video encoder thread that a new frame is available.
         // This will be ignored if we're not actually recording.
