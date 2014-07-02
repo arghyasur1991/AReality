@@ -60,7 +60,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         mTextureList = new ArrayList<Integer>();
         mSquareList = new ArrayList<Square>();
         mCameraSurface = new CameraSurface(mDelegate);
-        mVideoSurface = new VideoSurface(mDelegate);
+        mVideoSurface = new VideoSurface();
         mVideoEncoder = mDelegate.getEncoder();
         
         mRecordingStatus = -1;

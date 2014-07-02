@@ -36,7 +36,7 @@ public class EncoderDrawingObject {
         return mTimeStamp;
     }
     
-    synchronized public void draw() {
+    public void draw() {
         for(int i = 0; i < mTextureList.size(); i++) {
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
             GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mTextureList.get(i));

@@ -60,9 +60,8 @@ public class TextureMovieEncoder implements Runnable {
     private static final int MSG_START_RECORDING = 0;
     private static final int MSG_STOP_RECORDING = 1;
     private static final int MSG_FRAME_AVAILABLE = 2;
-    private static final int MSG_SET_TEXTURE_ID = 3;
-    private static final int MSG_UPDATE_SHARED_CONTEXT = 4;
-    private static final int MSG_QUIT = 5;
+    private static final int MSG_UPDATE_SHARED_CONTEXT = 3;
+    private static final int MSG_QUIT = 4;
 
     // ----- accessed exclusively by encoder thread -----
     private WindowSurface mInputWindowSurface;
@@ -77,7 +76,6 @@ public class TextureMovieEncoder implements Runnable {
     private Object mReadyFence = new Object();      // guards ready/running
     private boolean mReady;
     private boolean mRunning;
-
 
     /**
      * Encoder configuration.
@@ -202,7 +200,6 @@ public class TextureMovieEncoder implements Runnable {
             Log.w(TAG, "HEY: got SurfaceTexture with timestamp of zero");
             return;
         }
-
         mHandler.sendMessage(mHandler.obtainMessage(MSG_FRAME_AVAILABLE, object));
     }
 
@@ -295,10 +292,15 @@ public class TextureMovieEncoder implements Runnable {
     private void handleFrameAvailable(EncoderDrawingObject object) {
         mVideoEncoder.drainEncoder(false);
         //Todo draw
-        object.draw();
+        try {
+            object.draw();
 
-        mInputWindowSurface.setPresentationTime(object.getTimeStamp());
-        mInputWindowSurface.swapBuffers();
+            mInputWindowSurface.setPresentationTime(object.getTimeStamp());
+            mInputWindowSurface.swapBuffers();
+        }
+        catch(Exception ioe) {
+            
+        }
     }
 
     /**
