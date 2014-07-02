@@ -17,6 +17,15 @@
             android:text="Capture">
         </Button>
         
+        <Button
+            android:id="@+id/toggleRecording_button"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/CaptureScreen"
+            android:text="record"
+            android:onClick="clickToggleRecording" />
+        
     </RelativeLayout>
     
 </FrameLayout>

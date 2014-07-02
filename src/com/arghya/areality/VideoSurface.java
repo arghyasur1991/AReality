@@ -16,15 +16,13 @@ import java.io.IOException;
  *
  * @author sur
  */
-public class VideoSurface implements SurfaceTexture.OnFrameAvailableListener {
+public class VideoSurface{
     private final MediaPlayer mMediaPlayer;
     private SurfaceTexture mSurface;
     private int mTexture;
-    private final MainActivity mContext;
     
-    public VideoSurface(Context context) {
+    public VideoSurface() {
         mMediaPlayer = new MediaPlayer();
-        mContext = (MainActivity)context;
     }
     
     public void setMedia(String filePath) {
@@ -44,7 +42,6 @@ public class VideoSurface implements SurfaceTexture.OnFrameAvailableListener {
     public void start(int texture) {
         mTexture = texture;
         mSurface = new SurfaceTexture(mTexture);
-        mSurface.setOnFrameAvailableListener(this);
 
         Surface surface = new Surface(mSurface);
         mMediaPlayer.setSurface(surface);
@@ -59,13 +56,12 @@ public class VideoSurface implements SurfaceTexture.OnFrameAvailableListener {
         mMediaPlayer.start();
     }
     
-    public void updateSurface(float[] mSTMatrix) {
-        mSurface.updateTexImage();
-        mSurface.getTransformMatrix(mSTMatrix);
+    public long getTimeStamp() {
+        return mSurface.getTimestamp();
     }
     
-    public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-        mContext.requestRender();
+    public void updateSurface() {
+        mSurface.updateTexImage();
     }
     
     public void release() {

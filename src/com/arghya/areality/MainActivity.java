@@ -21,6 +21,9 @@ public class MainActivity extends Activity{
     private int height;
     
     Screenshot mScreenshot;
+    private boolean mRecordingEnabled;      // controls button state
+    
+    private static TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,9 +35,6 @@ public class MainActivity extends Activity{
         display.getSize(size);
         width = size.x;
         height = size.y;
-        
-        //testEncoder encoder = new testEncoder();
-        //encoder.testEncodeVideoToMp4();
 
         glSurfaceView = new GLCameraSurfaceView(this);
         
@@ -58,6 +58,40 @@ public class MainActivity extends Activity{
                 });
         
         layout.bringChildToFront(newLayout);
+    }
+    
+    /**
+     * onClick handler for "record" button.
+     */
+    public void clickToggleRecording(@SuppressWarnings("unused") View unused) {
+        mRecordingEnabled = !mRecordingEnabled;
+        
+        glSurfaceView.changeRecordingState(mRecordingEnabled);
+        updateControls();
+    }
+
+//    /**
+//     * onClick handler for "rebind" checkbox.
+//     */
+//    public void clickRebindCheckbox(View unused) {
+//        CheckBox cb = (CheckBox) findViewById(R.id.rebindHack_checkbox);
+//        TextureRender.sWorkAroundContextProblem = cb.isChecked();
+//    }
+    /**
+     * Updates the on-screen controls to reflect the current state of the app.
+     */
+    private void updateControls() {
+        Button toggleRelease = (Button) findViewById(R.id.toggleRecording_button);
+        String record = mRecordingEnabled
+                ? "stop recording" : "record";
+        toggleRelease.setText(record);
+
+        //CheckBox cb = (CheckBox) findViewById(R.id.rebindHack_checkbox);
+        //cb.setChecked(TextureRender.sWorkAroundContextProblem);
+    }
+    
+    public TextureMovieEncoder getEncoder() {
+        return sVideoEncoder;
     }
     
     private void setButtonOnClick(Button button, View.OnClickListener onClickListener) {

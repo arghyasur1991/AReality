@@ -8,12 +8,14 @@ package com.arghya.areality;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.opengl.EGL14;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.os.Environment;
+import android.util.Log;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -28,8 +30,11 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     ArrayList<Integer> mTextureList;
     MainActivity mDelegate;
     
-    private Square mSquare;
-    private Square mSquare2;
+    private static final int RECORDING_OFF = 0;
+    private static final int RECORDING_ON = 1;
+    private static final int RECORDING_RESUMED = 2;
+    
+    private ArrayList<Square> mSquareList;
     
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
@@ -41,15 +46,42 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     
     private final CameraSurface mCameraSurface;
     private final VideoSurface mVideoSurface;
+    
+    private final TextureMovieEncoder mVideoEncoder;
+    private boolean mRecordingEnabled;
+    private int mRecordingStatus;
+    private int mFrameCount;
+    private EncoderDrawingObject mEncoderDrawingObject;
+    
+    private File mOutputFile;
 
     public GLCameraRenderer(MainActivity _delegate) {
         mDelegate = _delegate;
         mTextureList = new ArrayList<Integer>();
+        mSquareList = new ArrayList<Square>();
         mCameraSurface = new CameraSurface(mDelegate);
-        mVideoSurface = new VideoSurface(mDelegate);
+        mVideoSurface = new VideoSurface();
+        mVideoEncoder = mDelegate.getEncoder();
+        
+        mRecordingStatus = -1;
+        mRecordingEnabled = false;
+        mFrameCount = -1;
+        
+        mOutputFile = new File(Environment.getExternalStorageDirectory(), "camera-test.mp4");
     }
 
     public void onSurfaceCreated(GL10 unused, javax.microedition.khronos.egl.EGLConfig config) {
+        
+        // We're starting up or coming back.  Either way we've got a new EGLContext that will
+        // need to be shared with the video encoder, so figure out if a recording is already
+        // in progress.
+        mRecordingEnabled = mVideoEncoder.isRecording();
+        if (mRecordingEnabled) {
+            mRecordingStatus = RECORDING_RESUMED;
+        } else {
+            mRecordingStatus = RECORDING_OFF;
+        }
+        
         createExternalTexture();
         createExternalTexture();
         
@@ -57,18 +89,26 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
 
         mVideoSurface.setMedia(fileName);
         
-        Shaders chromaKeyShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyYUV());
-        chromaKeyShader.setTextureIndex(0);
-        mSquare = new Square(chromaKeyShader);
+        Shaders chromaKeyBlendShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyBlend());
+        chromaKeyBlendShader.setTextureIndex(0);
+        mSquareList.add(new Square(chromaKeyBlendShader));
         
-        Shaders textureShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.texture());
-        textureShader.setTextureIndex(1);
-        mSquare2 = new Square(textureShader);
+        Shaders shaderForEncoder = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyBlend());
+        shaderForEncoder.setTextureIndex(0);
+
+        mEncoderDrawingObject = new EncoderDrawingObject(new Square(shaderForEncoder), mTextureList);
         
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         
         mCameraSurface.start(mTextureList.get(0));
         mVideoSurface.start(mTextureList.get(1));
+    }
+    
+    /**
+     * Notifies the renderer that we want to stop or start recording.
+     */
+    public void changeRecordingState(boolean isRecording) {
+        mRecordingEnabled = isRecording;
     }
 
     public float[] getKey() {
@@ -93,9 +133,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         
         mCameraSurface.updateSurface(mSTMatrix);
-        
-        float[] mtx = new float[16];
-        mVideoSurface.updateSurface(mtx);
+        mVideoSurface.updateSurface();
         
         // Set the camera position (View matrix)
         Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
@@ -104,8 +142,54 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         // Draw square
-        mSquare2.draw(mMVPMatrix, mtx);
-        mSquare.draw(mMVPMatrix, mSTMatrix);
+        mSquareList.get(0).draw(mMVPMatrix, mSTMatrix);
+        
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
+        
+        if (mRecordingEnabled) {
+            switch (mRecordingStatus) {
+                case RECORDING_OFF:
+                    //Log.d(TAG, "START recording");
+                    // start recording
+                    mVideoEncoder.startRecording(new TextureMovieEncoder.EncoderConfig(
+                            mOutputFile, 1280, 720, 5000000, EGL14.eglGetCurrentContext()));
+                    mRecordingStatus = RECORDING_ON;
+                    break;
+                case RECORDING_RESUMED:
+                    //Log.d(TAG, "RESUME recording");
+                    mVideoEncoder.updateSharedContext(EGL14.eglGetCurrentContext());
+                    mRecordingStatus = RECORDING_ON;
+                    break;
+                case RECORDING_ON:
+                    // yay
+                    break;
+                default:
+                    throw new RuntimeException("unknown status " + mRecordingStatus);
+            }
+        } else {
+            switch (mRecordingStatus) {
+                case RECORDING_ON:
+                case RECORDING_RESUMED:
+                    // stop recording
+                    //Log.d(TAG, "STOP recording");
+                    mVideoEncoder.stopRecording();
+                    mRecordingStatus = RECORDING_OFF;
+                    break;
+                case RECORDING_OFF:
+                    // yay
+                    break;
+                default:
+                    throw new RuntimeException("unknown status " + mRecordingStatus);
+            }
+        }
+
+        // Tell the video encoder thread that a new frame is available.
+        // This will be ignored if we're not actually recording.
+        
+        mEncoderDrawingObject.setData(mMVPMatrix, mSTMatrix, mCameraSurface.getTimeStamp());
+        
+        mVideoEncoder.frameAvailable(mEncoderDrawingObject);
+        
     }
 
     public void onSurfaceChanged(GL10 gl, int width, int height) {

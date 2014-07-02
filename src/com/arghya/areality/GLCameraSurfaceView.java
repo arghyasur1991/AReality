@@ -58,6 +58,15 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         });
     }
     
+    public void changeRecordingState(final boolean recordingEnabled) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                renderer.changeRecordingState(recordingEnabled);
+            }
+        });
+    }
+    
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event != null) {

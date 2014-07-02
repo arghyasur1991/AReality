@@ -9,7 +9,11 @@ package com.arghya.areality;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 
 /**
  *
@@ -19,7 +23,7 @@ public class CameraSurface implements SurfaceTexture.OnFrameAvailableListener {
     private SurfaceTexture mSurface;
     private int mTexture;
     private Camera mCamera;
-    private final MainActivity mContext;
+    private static MainActivity mContext;
     
     public CameraSurface(Context context) {
         mContext = (MainActivity) context;
@@ -49,6 +53,9 @@ public class CameraSurface implements SurfaceTexture.OnFrameAvailableListener {
         mSurface.getTransformMatrix(mSTMatrix);
     }
     
+    public long getTimeStamp() {
+        return mSurface.getTimestamp();
+    }
     /**
      * A safe way to get an instance of the Camera object.
      */
