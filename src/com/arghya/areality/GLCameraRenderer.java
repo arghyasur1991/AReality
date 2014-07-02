@@ -152,7 +152,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
                     //Log.d(TAG, "START recording");
                     // start recording
                     mVideoEncoder.startRecording(new TextureMovieEncoder.EncoderConfig(
-                            mOutputFile, 640, 480, 1000000, EGL14.eglGetCurrentContext()));
+                            mOutputFile, 1280, 720, 5000000, EGL14.eglGetCurrentContext()));
                     mRecordingStatus = RECORDING_ON;
                     break;
                 case RECORDING_RESUMED:
