@@ -66,7 +66,6 @@ public class TextureMovieEncoder implements Runnable {
     // ----- accessed exclusively by encoder thread -----
     private WindowSurface mInputWindowSurface;
     private EglCore mEglCore;
-    private int mTextureId;
     private int mFrameNum;
     private VideoEncoderCore mVideoEncoder;
 
@@ -75,6 +74,7 @@ public class TextureMovieEncoder implements Runnable {
 
     private Object mReadyFence = new Object();      // guards ready/running
     private boolean mReady;
+    private boolean mEncoderReady;
     private boolean mRunning;
 
     /**
@@ -186,7 +186,7 @@ public class TextureMovieEncoder implements Runnable {
      */
     public void frameAvailable(EncoderDrawingObject object) {
         synchronized (mReadyFence) {
-            if (!mReady) {
+            if (!mReady || !mEncoderReady) {
                 return;
             }
         }
@@ -342,6 +342,7 @@ public class TextureMovieEncoder implements Runnable {
         mEglCore = new EglCore(sharedContext, EglCore.FLAG_RECORDABLE);
         mInputWindowSurface = new WindowSurface(mEglCore, mVideoEncoder.getInputSurface(), true);
         mInputWindowSurface.makeCurrent();
+        mEncoderReady = true;
     }
 
     private void releaseEncoder() {
@@ -350,9 +351,13 @@ public class TextureMovieEncoder implements Runnable {
             mInputWindowSurface.release();
             mInputWindowSurface = null;
         }
+        mEncoderReady = false;
+    }
+    
+    public void release() {
         if (mEglCore != null) {
-            //mEglCore.release();
-            //mEglCore = null;
+            mEglCore.release();
+            mEglCore = null;
         }
     }
 }

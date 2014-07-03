@@ -257,5 +257,6 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     public void release() {
         mCameraSurface.release();
         mVideoSurface.release();
+        mVideoEncoder.release();
     }
 }
