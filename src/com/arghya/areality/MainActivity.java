@@ -15,28 +15,18 @@ public class MainActivity extends Activity {
     
     private GLCameraSurfaceView glSurfaceView;
     
-    private int width;
-    private int height;
-    
     Screenshot mScreenshot;
     private boolean mRecordingEnabled;      // controls button state
     
-    private static TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
+    private final static TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        width = size.x;
-        height = size.y;
 
         glSurfaceView = new GLCameraSurfaceView(this);
         
-        mScreenshot = new Screenshot(this, glSurfaceView);
+        mScreenshot = new Screenshot(glSurfaceView);
         
         setContentView(R.layout.main);
         
@@ -100,14 +90,6 @@ public class MainActivity extends Activity {
     
     synchronized public void requestRender() {
         glSurfaceView.requestRender();
-    }
-    
-    public int getWidth() {
-        return width;
-    }
-    
-    public int getHeight() {
-        return height;
     }
 
     @Override

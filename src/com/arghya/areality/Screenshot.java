@@ -27,33 +27,16 @@ public class Screenshot {
     
     private final GLCameraSurfaceView mGlSurfaceView;
     
-    private final MainActivity mContext;
-    
-    private final int width;
-    private final int height;
-    
     private String mSaveLocation;
     
-    public Screenshot(Context context, GLCameraSurfaceView surfaceView) {
-        mContext = (MainActivity)context;
+    public Screenshot(GLCameraSurfaceView surfaceView) {
         mGlSurfaceView = surfaceView;
         
         mSaveLocation = "Screens";
-        
-        width = mContext.getWidth();
-        height = mContext.getHeight();
     }
     
     public void capture() {
         mGlSurfaceView.capture(this);
-    }
-    
-    public int getWidth() {
-        return width;
-    }
-    
-    public int getHeight() {
-        return height;
     }
     
     public void setCameraBitmap(Bitmap bmp) {

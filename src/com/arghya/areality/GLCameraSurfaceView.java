@@ -8,7 +8,7 @@ package com.arghya.areality;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.PixelFormat;
+//import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
@@ -45,12 +45,12 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         queueEvent(new Runnable() {
             @Override
             public void run() {
-                final int[] b = OpenGLESUtility.getGLBuffer(screenShot.getWidth(), screenShot.getHeight());
+                final int[] b = OpenGLESUtility.getGLBuffer(getWidth(), getHeight());
                 
                 Thread writeScreenThread = new Thread(new Runnable() {
 
                     public void run() {
-                        Bitmap bmp = OpenGLESUtility.getGLBitmap(b, screenShot.getWidth(), screenShot.getHeight());
+                        Bitmap bmp = OpenGLESUtility.getGLBitmap(b, getWidth(), getHeight());
                         screenShot.setCameraBitmap(bmp);
                     }
                 });
