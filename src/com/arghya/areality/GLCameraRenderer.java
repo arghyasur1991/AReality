@@ -49,7 +49,6 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     private final TextureMovieEncoder mVideoEncoder;
     private boolean mRecordingEnabled;
     private int mRecordingStatus;
-    private final int mFrameCount;
     private EncoderDrawingObject mEncoderDrawingObject;
     
     private File mOutputFile;
@@ -61,11 +60,14 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         mSquareList = new ArrayList<Square>();
         mCameraSurface = new CameraSurface(mDelegate);
         mVideoSurface = new VideoSurface();
+        
+        String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
+
+        mVideoSurface.setMedia(fileName);
         mVideoEncoder = mDelegate.getEncoder();
         
         mRecordingStatus = -1;
         mRecordingEnabled = false;
-        mFrameCount = -1;
         
         mOutputFile = new File(Environment.getExternalStorageDirectory(), "camera-test.mp4");
     }
@@ -84,10 +86,6 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         
         createExternalTexture();
         createExternalTexture();
-        
-        String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
-
-        mVideoSurface.setMedia(fileName);
         
         Shaders chromaKeyBlendShader = new Shaders(this, Shaders.VERTEX_SHADER_TEXTURE, Shaders.FRAGMENT_SHADER_TEXTURE_CHROMA_KEY_BLEND);
         chromaKeyBlendShader.setTextureIndex(0);
@@ -145,6 +143,30 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         mSquareList.get(0).draw(mMVPMatrix, mSTMatrix);
         
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
+        handleRecordingState();
+        
+        // Tell the video encoder thread that a new frame is available.
+        // This will be ignored if we're not actually recording.
+        
+        mEncoderDrawingObject.setData(mMVPMatrix, mSTMatrix, mCameraSurface.getTimeStamp());
+        
+        mVideoEncoder.frameAvailable(mEncoderDrawingObject);
+        
+    }
+
+    public void onSurfaceChanged(GL10 gl, int width, int height) {
+        if (height == 0) {       //Prevent A Divide By Zero By
+            height = 1;         //Making Height Equal One
+        }
+        GLES20.glViewport(0, 0, width, height);
+        float ratio = (float) width / height;
+
+        // this projection matrix is applied to object coordinates
+        // in the onDrawFrame() method
+        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+    }
+    
+    private void handleRecordingState() {
         
         if (mRecordingEnabled) {
             switch (mRecordingStatus) {
@@ -183,25 +205,6 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
             }
         }
 
-        // Tell the video encoder thread that a new frame is available.
-        // This will be ignored if we're not actually recording.
-        
-        mEncoderDrawingObject.setData(mMVPMatrix, mSTMatrix, mCameraSurface.getTimeStamp());
-        
-        mVideoEncoder.frameAvailable(mEncoderDrawingObject);
-        
-    }
-
-    public void onSurfaceChanged(GL10 gl, int width, int height) {
-        if (height == 0) {       //Prevent A Divide By Zero By
-            height = 1;         //Making Height Equal One
-        }
-        GLES20.glViewport(0, 0, width, height);
-        float ratio = (float) width / height;
-
-        // this projection matrix is applied to object coordinates
-        // in the onDrawFrame() method
-        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
     }
     
     private void createTexture2D() {
