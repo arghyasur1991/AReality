@@ -8,8 +8,8 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 
 public class MainActivity extends Activity {
     
@@ -17,24 +17,30 @@ public class MainActivity extends Activity {
     
     Screenshot mScreenshot;
     private boolean mRecordingEnabled;      // controls button state
+    private int mWidth;
+    private int mHeight;
     
     private final static TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        getSize();
+        
         glSurfaceView = new GLCameraSurfaceView(this);
+        
+        RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(
+                (int)(0.8 * mWidth), (int) (0.8 * mHeight));
+        //previewParams.addRule(RelativeLayout.CENTER_VERTICAL);
         
         mScreenshot = new Screenshot(glSurfaceView);
         
         setContentView(R.layout.main);
         
-        FrameLayout layout = (FrameLayout) findViewById(R.id.mainFrame);
+        RelativeLayout layout = (RelativeLayout) findViewById(R.id.MainFrame);
         
-        layout.addView(glSurfaceView);
+        layout.addView(glSurfaceView, 0, previewParams);
         
-        RelativeLayout newLayout = (RelativeLayout) findViewById(R.id.UILayout);
         Button capture = (Button) findViewById(R.id.CaptureScreen);
         setButtonOnClick(capture,
                 new View.OnClickListener() {
@@ -45,7 +51,24 @@ public class MainActivity extends Activity {
                     }
                 });
         
-        layout.bringChildToFront(newLayout);
+        Button record = (Button) findViewById(R.id.ToggleRecording_button);
+        setButtonOnClick(record,
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        clickToggleRecording(v);
+                    }
+                });
+    }
+    
+    private void getSize() {
+        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        mWidth = size.x;
+        mHeight = size.y;
     }
     
     /**
@@ -57,25 +80,15 @@ public class MainActivity extends Activity {
         glSurfaceView.changeRecordingState(mRecordingEnabled);
         updateControls();
     }
-
-//    /**
-//     * onClick handler for "rebind" checkbox.
-//     */
-//    public void clickRebindCheckbox(View unused) {
-//        CheckBox cb = (CheckBox) findViewById(R.id.rebindHack_checkbox);
-//        TextureRender.sWorkAroundContextProblem = cb.isChecked();
-//    }
+    
     /**
      * Updates the on-screen controls to reflect the current state of the app.
      */
     private void updateControls() {
-        Button toggleRelease = (Button) findViewById(R.id.toggleRecording_button);
+        Button toggleRelease = (Button) findViewById(R.id.ToggleRecording_button);
         String record = mRecordingEnabled
-                ? "stop recording" : "record";
+                ? "Stop Recording" : "Record";
         toggleRelease.setText(record);
-
-        //CheckBox cb = (CheckBox) findViewById(R.id.rebindHack_checkbox);
-        //cb.setChecked(TextureRender.sWorkAroundContextProblem);
     }
     
     public TextureMovieEncoder getEncoder() {

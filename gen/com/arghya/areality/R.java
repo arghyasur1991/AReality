@@ -14,10 +14,9 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int CaptureScreen=0x7f050002;
-        public static final int UILayout=0x7f050001;
-        public static final int mainFrame=0x7f050000;
-        public static final int toggleRecording_button=0x7f050003;
+        public static final int CaptureScreen=0x7f050001;
+        public static final int MainFrame=0x7f050000;
+        public static final int ToggleRecording_button=0x7f050002;
     }
     public static final class layout {
         public static final int main=0x7f030000;
