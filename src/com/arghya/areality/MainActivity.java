@@ -11,11 +11,9 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-public class MainActivity extends Activity{
+public class MainActivity extends Activity {
     
     private GLCameraSurfaceView glSurfaceView;
-    //private ImageSurfaceView imageSurfaceView;
-    //private BackgroundVideoView videoView;
     
     private int width;
     private int height;
