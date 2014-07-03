@@ -6,41 +6,40 @@
 
 package com.arghya.areality;
 
-import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import java.util.ArrayList;
 
 /**
  *
  * @author sur
  */
 public class Shaders {
+    public static int VERTEX_SHADER_TEXTURE = 0;
+    
+    public static int FRAGMENT_SHADER_COLOR = 0;
+    public static int FRAGMENT_SHADER_TEXTURE = 1;
+    public static int FRAGMENT_SHADER_TEXTURE_2D = 2;
+    public static int FRAGMENT_SHADER_TEXTURE_BW = 3;
+    public static int FRAGMENT_SHADER_TEXTURE_CHROMA_KEY = 4;
+    public static int FRAGMENT_SHADER_TEXTURE_CHROMA_KEY_YUV = 5;
+    public static int FRAGMENT_SHADER_TEXTURE_CHROMA_KEY_BLEND = 6;
+    
     private int mProgram;
     private final GLCameraRenderer mRenderer;
     private final VertexShader mVertexShader;
     private final FragmentShader mFragmentShader;
     private int mTextureIndex;
     
-    public Shaders(GLCameraRenderer renderer, String vShaderCode, String fShaderCode) {
+    public Shaders(GLCameraRenderer renderer, int vShader, int fShader) {
         mRenderer = renderer;
-        int vIndex = 0;
         
-        int fIndex = 0;
-        
-        if(fShaderCode.equalsIgnoreCase(FragmentShader.texture()))
-            fIndex = 1;
-        else if(fShaderCode.equalsIgnoreCase(FragmentShader.texture2D()))
-            fIndex = 2;
-        else if (fShaderCode.equalsIgnoreCase(FragmentShader.textureBW()))
-            fIndex = 3;
-        else if (fShaderCode.equalsIgnoreCase(FragmentShader.textureChromaKey())) 
-            fIndex = 4;
-        else if (fShaderCode.equalsIgnoreCase(FragmentShader.textureChromaKeyYUV()))
-            fIndex = 5;
-        else if(fShaderCode.equalsIgnoreCase(FragmentShader.textureChromaKeyBlend()))
-            fIndex = 6;  
-        
-        mVertexShader = new VertexShader(vIndex);
-        mFragmentShader = new FragmentShader(fIndex);
+        mVertexShader = new VertexShader(vShader);
+        mFragmentShader = new FragmentShader(fShader);
+    }
+    
+    public static void init() {
+        VertexShader.initVertexShaders();
+        FragmentShader.initFragmentShaders();
     }
     
     public void setTextureIndex(int index) {
@@ -90,9 +89,14 @@ public class Shaders {
     
     public static class VertexShader {
         private final int mIndex;
+        private final static ArrayList<String> mShaderCodes = new ArrayList<String>();
         
         public VertexShader(int index) {
             mIndex = index;
+        }
+
+        private static void initVertexShaders() {
+            mShaderCodes.add(texture());
         }
 
         public int getIndex() {
@@ -100,15 +104,10 @@ public class Shaders {
         }
 
         public String getCode() {
-            switch (mIndex) {
-                case 0:
-                    return texture();
-                default:
-                    return "";
-            }
+            return mShaderCodes.get(mIndex);
         }
         
-        public static String texture() {
+        private static String texture() {
             final String vertexShaderCode
                     = "uniform mat4 uMVPMatrix;\n"
                     + "uniform mat4 uSTMatrix;\n"
@@ -126,9 +125,20 @@ public class Shaders {
     
     public static class FragmentShader {
         private final int mIndex;
+        private final static ArrayList<String> mShaderCodes = new ArrayList<String>();
 
         public FragmentShader(int index) {
             mIndex = index;
+        }
+        
+        private static void initFragmentShaders() {
+            mShaderCodes.add(color());
+            mShaderCodes.add(texture());
+            mShaderCodes.add(texture2D());
+            mShaderCodes.add(textureBW());
+            mShaderCodes.add(textureChromaKey());
+            mShaderCodes.add(textureChromaKeyYUV());
+            mShaderCodes.add(textureChromaKeyBlend());
         }
         
         public int getIndex() {
@@ -136,27 +146,10 @@ public class Shaders {
         }
 
         public String getCode() {
-            switch (mIndex) {
-                case 0:
-                    return color();
-                case 1:
-                    return texture();
-                case 2:
-                    return texture2D();
-                case 3:
-                    return textureBW();
-                case 4:
-                    return textureChromaKey();
-                case 5: 
-                    return textureChromaKeyYUV();
-                case 6:
-                    return textureChromaKeyBlend();
-                default:
-                    return "";
-            }
+            return mShaderCodes.get(mIndex);
         }
         
-        public static String color() {
+        private static String color() {
             final String fragmentShaderCode
                 = "precision mediump float;"
                 + "uniform vec4 vColor;"
@@ -167,7 +160,7 @@ public class Shaders {
             return fragmentShaderCode;
         }
         
-        public static String texture() {
+        private static String texture() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
                     + "precision mediump float;\n"
@@ -179,7 +172,7 @@ public class Shaders {
             return fragmentShaderCode;
         }
         
-        public static String texture2D() {
+        private static String texture2D() {
             final String fragmentShaderCode
                     = "precision mediump float;\n"
                     + "varying vec2 vTextureCoord;\n"
@@ -190,7 +183,7 @@ public class Shaders {
             return fragmentShaderCode;
         }
         
-        public static String textureBW() {
+        private static String textureBW() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
                     + "precision mediump float;\n"
@@ -205,7 +198,7 @@ public class Shaders {
             return fragmentShaderCode;
         }
         
-        public static String textureChromaKey() {
+        private static String textureChromaKey() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
                     + "precision mediump float;\n"
@@ -226,7 +219,7 @@ public class Shaders {
             return fragmentShaderCode;
         }
         
-        public static String textureChromaKeyYUV() {
+        private static String textureChromaKeyYUV() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
                     + "precision mediump float;\n"
@@ -247,7 +240,7 @@ public class Shaders {
             return fragmentShaderCode;
         }
         
-        public static String textureChromaKeyBlend() {
+        private static String textureChromaKeyBlend() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
                     + "precision mediump float;\n"

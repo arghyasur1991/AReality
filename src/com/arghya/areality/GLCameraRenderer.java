@@ -15,7 +15,6 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.os.Environment;
-import android.util.Log;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -34,7 +33,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     private static final int RECORDING_ON = 1;
     private static final int RECORDING_RESUMED = 2;
     
-    private ArrayList<Square> mSquareList;
+    private final ArrayList<Square> mSquareList;
     
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
@@ -50,12 +49,13 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     private final TextureMovieEncoder mVideoEncoder;
     private boolean mRecordingEnabled;
     private int mRecordingStatus;
-    private int mFrameCount;
+    private final int mFrameCount;
     private EncoderDrawingObject mEncoderDrawingObject;
     
     private File mOutputFile;
 
     public GLCameraRenderer(MainActivity _delegate) {
+        Shaders.init();
         mDelegate = _delegate;
         mTextureList = new ArrayList<Integer>();
         mSquareList = new ArrayList<Square>();
@@ -89,11 +89,11 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
 
         mVideoSurface.setMedia(fileName);
         
-        Shaders chromaKeyBlendShader = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyBlend());
+        Shaders chromaKeyBlendShader = new Shaders(this, Shaders.VERTEX_SHADER_TEXTURE, Shaders.FRAGMENT_SHADER_TEXTURE_CHROMA_KEY_BLEND);
         chromaKeyBlendShader.setTextureIndex(0);
         mSquareList.add(new Square(chromaKeyBlendShader));
         
-        Shaders shaderForEncoder = new Shaders(this, Shaders.VertexShader.texture(), Shaders.FragmentShader.textureChromaKeyBlend());
+        Shaders shaderForEncoder = new Shaders(this, Shaders.VERTEX_SHADER_TEXTURE, Shaders.FRAGMENT_SHADER_TEXTURE_CHROMA_KEY_BLEND);
         shaderForEncoder.setTextureIndex(0);
 
         mEncoderDrawingObject = new EncoderDrawingObject(new Square(shaderForEncoder), mTextureList);
