@@ -23,12 +23,14 @@ public class GLCameraSurfaceView extends GLSurfaceView {
 
     public GLCameraSurfaceView(Context context) {
         super(context);
-        
-        setZOrderMediaOverlay(true);
         setEGLContextClientVersion(2);
+        
+        /** To make it translucent but it isn't necessary in the current implementation
+        setZOrderMediaOverlay(true);
         setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         
         getHolder().setFormat(PixelFormat.RGBA_8888);
+        */
         
         renderer = new GLCameraRenderer((MainActivity) context);
         setRenderer(renderer);
