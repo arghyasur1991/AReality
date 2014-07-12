@@ -41,7 +41,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     private final float[] mRotationMatrix = new float[16];
     private final float[] mSTMatrix = new float[16];
 
-    float[] mKey = {0, 0, 0, 0};
+    float[] mKey = {-100.0f, -100.0f, -100.0f, -100.0f};
     
     private final CameraSurface mCameraSurface;
     private final VideoSurface mVideoSurface;

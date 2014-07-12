@@ -19,6 +19,8 @@ public class MainActivity extends Activity {
     private int mWidth;
     private int mHeight;
     
+    private float mCurrentPreviewScale = 1.0f;
+    
     private final static TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
 
     @Override
@@ -29,7 +31,7 @@ public class MainActivity extends Activity {
         glSurfaceView = new GLCameraSurfaceView(this);
         
         RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(
-                (int)(0.8 * mWidth), (int) (0.8 * mHeight));
+                (int)(mCurrentPreviewScale * mWidth), (int) (mCurrentPreviewScale * mHeight));
         //previewParams.addRule(RelativeLayout.CENTER_VERTICAL);
         
         mScreenshot = new Screenshot(glSurfaceView);
@@ -40,7 +42,7 @@ public class MainActivity extends Activity {
         
         layout.addView(glSurfaceView, 0, previewParams);
         
-        setButtonOnClick(R.id.CaptureScreen,
+        setButtonOnClick(R.id.CaptureScreenButton,
                 new View.OnClickListener() {
 
                     @Override
@@ -49,12 +51,20 @@ public class MainActivity extends Activity {
                     }
                 });
         
-        setButtonOnClick(R.id.ToggleRecording_button,
+        setButtonOnClick(R.id.ToggleRecordingButton,
                 new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
                         clickToggleRecording();
+                    }
+                });
+        
+        setButtonOnClick(R.id.ToggleEditModeButton,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        togglePreviewSize();
                     }
                 });
     }
@@ -66,6 +76,18 @@ public class MainActivity extends Activity {
         display.getSize(size);
         mWidth = size.x;
         mHeight = size.y;
+    }
+    
+    public void togglePreviewSize() {
+        if(mCurrentPreviewScale == 1.0f)
+            mCurrentPreviewScale = 0.8f;
+        else
+            mCurrentPreviewScale = 1.0f;
+        
+        RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(
+                (int) (mCurrentPreviewScale * mWidth), (int) (mCurrentPreviewScale * mHeight));
+        
+        glSurfaceView.setLayoutParams(previewParams);
     }
     
     /**
@@ -82,7 +104,7 @@ public class MainActivity extends Activity {
      * Updates the on-screen controls to reflect the current state of the app.
      */
     private void updateControls() {
-        Button toggleRelease = (Button) findViewById(R.id.ToggleRecording_button);
+        Button toggleRelease = (Button) findViewById(R.id.ToggleRecordingButton);
         toggleRelease.setActivated(mRecordingEnabled); 
     }
     

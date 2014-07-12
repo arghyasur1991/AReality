@@ -1,0 +1,16 @@
+bin
+gen
+target
+private
+.settings
+.classpath
+.project
+*.keystore
+*.swp
+*.orig
+*.log
+*.properties
+seed.txt
+map.txt
+build.xml
+proguard*
