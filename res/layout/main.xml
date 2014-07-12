@@ -4,25 +4,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff">
+    android:background="#000">
         
     <Button 
         android:id="@+id/CaptureScreen"
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignParentRight="true"
-        android:text="Capture">
+        android:background="@drawable/capture_button_resource">
     </Button>
 
     <Button
         android:id="@+id/ToggleRecording_button"
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_below="@id/CaptureScreen"
         android:layout_alignParentRight="true"
-        android:text="Record">
+        android:background="@drawable/record_button_resource">
     </Button>
 
 </RelativeLayout>

@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 
 public class MainActivity extends Activity {
     
@@ -41,8 +40,7 @@ public class MainActivity extends Activity {
         
         layout.addView(glSurfaceView, 0, previewParams);
         
-        Button capture = (Button) findViewById(R.id.CaptureScreen);
-        setButtonOnClick(capture,
+        setButtonOnClick(R.id.CaptureScreen,
                 new View.OnClickListener() {
 
                     @Override
@@ -51,13 +49,12 @@ public class MainActivity extends Activity {
                     }
                 });
         
-        Button record = (Button) findViewById(R.id.ToggleRecording_button);
-        setButtonOnClick(record,
+        setButtonOnClick(R.id.ToggleRecording_button,
                 new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        clickToggleRecording(v);
+                        clickToggleRecording();
                     }
                 });
     }
@@ -74,7 +71,7 @@ public class MainActivity extends Activity {
     /**
      * onClick handler for "record" button.
      */
-    public void clickToggleRecording(@SuppressWarnings("unused") View unused) {
+    public void clickToggleRecording() {
         mRecordingEnabled = !mRecordingEnabled;
         
         glSurfaceView.changeRecordingState(mRecordingEnabled);
@@ -86,16 +83,15 @@ public class MainActivity extends Activity {
      */
     private void updateControls() {
         Button toggleRelease = (Button) findViewById(R.id.ToggleRecording_button);
-        String record = mRecordingEnabled
-                ? "Stop Recording" : "Record";
-        toggleRelease.setText(record);
+        toggleRelease.setActivated(mRecordingEnabled); 
     }
     
     public TextureMovieEncoder getEncoder() {
         return sVideoEncoder;
     }
     
-    private void setButtonOnClick(Button button, View.OnClickListener onClickListener) {
+    private void setButtonOnClick(int buttonId, View.OnClickListener onClickListener) {
+        Button button = (Button) findViewById(buttonId);
         if (button != null) {
             button.setOnClickListener(onClickListener);
         }
