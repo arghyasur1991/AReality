@@ -3,6 +3,7 @@ package com.arghya.areality;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
@@ -75,6 +76,16 @@ public class MainActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         //clickToggleRecording();
+                    }
+                });
+        
+        setButtonOnClick(R.id.ToggleEditModeButton,
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        Button editToggle = (Button) findViewById(R.id.ToggleEditModeButton);
+                        editToggle.setActivated(!editToggle.isActivated());
                     }
                 });
     }
