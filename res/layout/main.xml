@@ -6,11 +6,23 @@
     android:layout_height="match_parent"
     android:background="#000">
         
+    <Switch 
+	    android:id="@+id/ToggleCameraMode"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentRight="true"
+	    android:thumb="@drawable/switch_resource"
+	    android:track="@drawable/holder"
+	    android:switchMinWidth="56dp"
+	    android:textOn=""
+	    android:textOff=""/>
+    
     <Button 
         android:id="@+id/CaptureScreenButton"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_below="@id/ToggleCameraMode"
         android:layout_alignParentRight="true"
         android:background="@drawable/capture_button_resource">
     </Button>
@@ -20,19 +32,10 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_below="@id/CaptureScreenButton"
+        android:layout_below="@id/ToggleCameraMode"
         android:layout_alignParentRight="true"
+        android:visibility="gone"
         android:background="@drawable/record_button_resource">
-    </Button>
-    
-    <Button
-        android:id="@+id/ToggleEditModeButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/ToggleRecordingButton"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/arrow">
     </Button>
 
 </RelativeLayout>

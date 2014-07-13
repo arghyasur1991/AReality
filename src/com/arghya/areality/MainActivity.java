@@ -8,7 +8,9 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 
 public class MainActivity extends Activity {
     
@@ -41,13 +43,29 @@ public class MainActivity extends Activity {
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.MainFrame);
         
         layout.addView(glSurfaceView, 0, previewParams);
+        final Button captureButton = (Button) findViewById(R.id.CaptureScreenButton);
+        final Button recordButton = (Button) findViewById(R.id.ToggleRecordingButton);
+        
+        Switch toggle = (Switch) findViewById(R.id.ToggleCameraMode);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!isChecked) {
+                    captureButton.setVisibility(View.VISIBLE);
+                    recordButton.setVisibility(View.GONE);
+                    
+                } else {
+                	captureButton.setVisibility(View.GONE);
+                    recordButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         
         setButtonOnClick(R.id.CaptureScreenButton,
                 new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        mScreenshot.capture();
+                        //mScreenshot.capture();
                     }
                 });
         
@@ -56,15 +74,7 @@ public class MainActivity extends Activity {
 
                     @Override
                     public void onClick(View v) {
-                        clickToggleRecording();
-                    }
-                });
-        
-        setButtonOnClick(R.id.ToggleEditModeButton,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        togglePreviewSize();
+                        //clickToggleRecording();
                     }
                 });
     }
