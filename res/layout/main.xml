@@ -54,20 +54,42 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_centerHorizontal="true">
+        android:layout_marginLeft="100dp">
+        
+        <RadioButton android:id="@+id/noSelect"
+                     android:layout_width="40dp"
+                     android:layout_height="40dp"
+                     android:button="@android:color/transparent"
+                     android:background = "@drawable/no_selection_mode"
+                     android:checked="true"/>
         
         <RadioButton android:id="@+id/selectColor"
-                     android:layout_width="50dp"
-                     android:layout_height="50dp"
+                     android:layout_width="40dp"
+                     android:layout_height="40dp"
                      android:button="@android:color/transparent"
                      android:background = "@drawable/select_color_mode"/>
         
         <RadioButton android:id="@+id/addColor"
-                     android:layout_width="50dp"
-                     android:layout_height="50dp"
+                     android:layout_width="40dp"
+                     android:layout_height="40dp"
                      android:button="@android:color/transparent"
                      android:background = "@drawable/add_color_mode"/>
     </RadioGroup>
+    
+    <SeekBar
+        android:id="@+id/tolerance"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:layout_centerVertical="true"
+        android:progressDrawable="@drawable/progress"
+        android:thumb="@drawable/thumb"
+        android:thumbOffset="-1dp"
+        android:progress="0"
+        android:secondaryProgress="0"
+        android:rotation="270">
+        
+    </SeekBar>
 
 </RelativeLayout>
 

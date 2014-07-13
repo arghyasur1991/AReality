@@ -6,7 +6,7 @@
             </item>
             <item android:drawable="@drawable/green_button_inset">
             </item>
-            <item android:drawable="@drawable/plus_inset">
+            <item android:drawable="@drawable/camera_inset">
             </item>
         </layer-list>
     </item>
@@ -14,7 +14,7 @@
         <layer-list xmlns:android="http://schemas.android.com/apk/res/android">    
             <item android:drawable="@drawable/green_button_inset">
             </item>
-            <item android:drawable="@drawable/plus_inset">
+            <item android:drawable="@drawable/camera_inset">
             </item>
         </layer-list>
     </item>

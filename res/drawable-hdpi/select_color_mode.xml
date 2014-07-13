@@ -4,10 +4,18 @@
         <layer-list xmlns:android="http://schemas.android.com/apk/res/android">    
             <item android:drawable="@drawable/ring_border">
             </item>
-            <item android:drawable="@drawable/select_color_inset">
+            <item android:drawable="@drawable/green_button_inset">
+            </item>
+            <item android:drawable="@drawable/select_inset">
             </item>
         </layer-list>
     </item>
-    <item android:drawable="@drawable/select_color_inset">
+    <item>
+        <layer-list xmlns:android="http://schemas.android.com/apk/res/android">    
+            <item android:drawable="@drawable/green_button_inset">
+            </item>
+            <item android:drawable="@drawable/select_inset">
+            </item>
+        </layer-list>
     </item>
 </selector>
