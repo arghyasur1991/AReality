@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class TransparentColorController {
     public static final int NO_SELECT_MODE = 0;
     public static final int SELECT_COLOR_MODE = 1;
-    public static final int ADD_COLOR_MODE = 1;
+    public static final int ADD_COLOR_MODE = 2;
     public static final int MAX_KEYS = 10;
     
     private final ArrayList<float[]> mColorList;
