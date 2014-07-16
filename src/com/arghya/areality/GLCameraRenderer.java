@@ -41,7 +41,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     private final float[] mRotationMatrix = new float[16];
     private final float[] mSTMatrix = new float[16];
 
-    float[] mKey = {-100.0f, -100.0f, -100.0f, -100.0f};
+    private TransparentColorController mTCController;
     
     private final CameraSurface mCameraSurface;
     private final VideoSurface mVideoSurface;
@@ -51,7 +51,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     private int mRecordingStatus;
     private EncoderDrawingObject mEncoderDrawingObject;
     
-    private File mOutputFile;
+    private final File mOutputFile;
 
     public GLCameraRenderer(MainActivity _delegate) {
         Shaders.init();
@@ -61,10 +61,11 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         mCameraSurface = new CameraSurface(mDelegate);
         mVideoSurface = new VideoSurface();
         
-        String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
+        //String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
 
-        mVideoSurface.setMedia(fileName);
+        //mVideoSurface.setMedia(fileName);
         mVideoEncoder = mDelegate.getEncoder();
+        mTCController = new TransparentColorController();
         
         mRecordingStatus = -1;
         mRecordingEnabled = false;
@@ -99,7 +100,6 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         
         mCameraSurface.start(mTextureList.get(0));
-        mVideoSurface.start(mTextureList.get(1));
     }
     
     /**
@@ -108,23 +108,22 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     public void changeRecordingState(boolean isRecording) {
         mRecordingEnabled = isRecording;
     }
-
-    public float[] getKey() {
-        return mKey;
+    
+    public ArrayList<float[]> getKeys() {
+        return mTCController.getKeys();
     }
     
-    public void setKey(Point p)
+    public ArrayList<float[]> getTolerances() {
+        return mTCController.getTolerances();
+    }
+    
+    public void setSelectMode(int mode) {
+        mTCController.setMode(mode);
+    }
+    
+    public void handleTouchAtCoordinate(Point p)
     {
-        ByteBuffer bb = ByteBuffer.allocateDirect(4);
-        bb.order(ByteOrder.nativeOrder());
-        bb.position(0);
-        GLES20.glReadPixels(p.x, p.y , 1, 1, GLES20.GL_RGBA,
-                GLES20.GL_UNSIGNED_BYTE, bb);
-        byte b[] = new byte[4];
-        bb.get(b);
-        mKey[0] = (float)(bb.get(0) & 0xFF)/ 255.0f;
-        mKey[1] = (float)(bb.get(1) & 0xFF)/ 255.0f;
-        mKey[2] = (float)(bb.get(2) & 0xFF)/ 255.0f;
+        mTCController.handleTouchAtCoordinate(p);
     }
 
     synchronized public void onDrawFrame(GL10 gl) {
@@ -205,6 +204,11 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
             }
         }
 
+    }
+    
+    public void setMedia(String filePath) {
+        mVideoSurface.setMedia(filePath);
+        mVideoSurface.start(mTextureList.get(1));
     }
     
     private void createTexture2D() {

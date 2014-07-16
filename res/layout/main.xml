@@ -90,6 +90,14 @@
         android:rotation="270">
         
     </SeekBar>
+    
+    <Button
+        android:id="@+id/ChooseMediaButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Select Media"
+        android:layout_centerHorizontal="true">
+    </Button>
 
 </RelativeLayout>
 

@@ -5,13 +5,16 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
+import java.io.File;
 
 public class MainActivity extends Activity {
     
@@ -55,7 +58,7 @@ public class MainActivity extends Activity {
                     recordButton.setVisibility(View.GONE);
                     
                 } else {
-                	captureButton.setVisibility(View.GONE);
+                    captureButton.setVisibility(View.GONE);
                     recordButton.setVisibility(View.VISIBLE);
                 }
             }
@@ -88,6 +91,31 @@ public class MainActivity extends Activity {
                         editToggle.setActivated(!editToggle.isActivated());
                     }
                 });
+        
+        setButtonOnClick(R.id.ChooseMediaButton,
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
+                        glSurfaceView.setMedia(fileName);
+                    }
+                });
+        
+        RadioGroup modeSelect = (RadioGroup) findViewById(R.id.ChangeSelectColorMode);
+        
+        modeSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                int id = group.getCheckedRadioButtonId();
+                int mode = TransparentColorController.NO_SELECT_MODE;
+                if(id == R.id.selectColor)
+                    mode = TransparentColorController.SELECT_COLOR_MODE;
+                else if(id == R.id.addColor)
+                    mode = TransparentColorController.ADD_COLOR_MODE;
+                glSurfaceView.setSelectMode(mode);
+            }
+        });
     }
     
     private void getSize() {

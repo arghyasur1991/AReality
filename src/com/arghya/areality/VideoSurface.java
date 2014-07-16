@@ -61,7 +61,8 @@ public class VideoSurface{
     }
     
     public void updateSurface() {
-        mSurface.updateTexImage();
+        if(mSurface != null)
+            mSurface.updateTexImage();
     }
     
     public void release() {

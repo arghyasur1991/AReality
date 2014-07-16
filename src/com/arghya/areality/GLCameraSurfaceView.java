@@ -36,10 +36,6 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         setRenderer(renderer);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
-
-    public GLCameraRenderer getRenderer() {
-        return renderer;
-    }
     
     public void capture(final Screenshot screenShot) {
         queueEvent(new Runnable() {
@@ -69,6 +65,24 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         });
     }
     
+    public void setMedia(final String filePath) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                renderer.setMedia(filePath);
+            }
+        });
+    }
+    
+    public void setSelectMode(final int mode) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                renderer.setSelectMode(mode);
+            }
+        });
+    }
+    
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event != null) {
@@ -84,7 +98,7 @@ public class GLCameraSurfaceView extends GLSurfaceView {
                     queueEvent(new Runnable() {
                         @Override
                         public void run() {
-                            renderer.setKey(p);
+                            renderer.handleTouchAtCoordinate(p);
                         }
                     });
 

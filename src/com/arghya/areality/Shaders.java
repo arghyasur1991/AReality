@@ -60,7 +60,6 @@ public class Shaders {
     
     public void doShaderSpecificTasks() {
         int texHandle = GLES20.glGetUniformLocation(mProgram, "sTexture");
-        int chromaKeyHandle = GLES20.glGetUniformLocation(mProgram, "uKey");
         
         switch(mFragmentShader.getIndex()) {
             case 0:
@@ -72,19 +71,60 @@ public class Shaders {
                 break;
             case 4:
             case 5:
-                GLES20.glUniform4fv(chromaKeyHandle, 1, mRenderer.getKey(), 0);
+                float[] key = {-100.0f, -100.0f, -100.0f, -100.f};
+                int chromaKeyHandle = GLES20.glGetUniformLocation(mProgram, "uKey");
+                GLES20.glUniform4fv(chromaKeyHandle, 1, key, 0);
                 GLES20.glUniform1i(texHandle, mTextureIndex);
                 break;
             case 6:
                 texHandle = GLES20.glGetUniformLocation(mProgram, "sTexture1");
                 int texHandle2 = GLES20.glGetUniformLocation(mProgram, "sTexture2");
-                GLES20.glUniform4fv(chromaKeyHandle, 1, mRenderer.getKey(), 0);
+                
+                if(true) {
+                    ArrayList<float[]> keys = mRenderer.getKeys();
+                    ArrayList<float[]> tolerances = mRenderer.getTolerances();
+
+                    int numKeysHandle = GLES20.glGetUniformLocation(mProgram, "uNumOfKeys");
+                    GLES20.glUniform1i(numKeysHandle, keys.size());
+
+                    float[] keyBuffer = getBuffer(keys);
+
+                    float[] toleranceBuffer = getBuffer(tolerances);
+
+                    int keysHandle = GLES20.glGetUniformLocation(mProgram, "uKeys");
+                    GLES20.glUniform3fv(keysHandle, TransparentColorController.MAX_KEYS, keyBuffer, 0);
+
+                    int toleranceHandle = GLES20.glGetUniformLocation(mProgram, "uThresholds");
+                    GLES20.glUniform3fv(toleranceHandle, TransparentColorController.MAX_KEYS, toleranceBuffer, 0);
+                }
+                else if(false){
+                    float[] key2 = {-100.0f, -100.0f, -100.0f, -100.f};
+                    int chromaKeyHandle2 = GLES20.glGetUniformLocation(mProgram, "uKey");
+                    GLES20.glUniform4fv(chromaKeyHandle2, 1, key2, 0);
+                }
                 
                 GLES20.glUniform1i(texHandle, mTextureIndex);
                 GLES20.glUniform1i(texHandle2, mTextureIndex + 1);
                 break;
             default:
         }
+    }
+    
+    private float[] getBuffer(ArrayList<float[]> list) {
+        float[] buffer = new float[3 * TransparentColorController.MAX_KEYS];
+        for (int i = 0; i < list.size(); i++) {
+            buffer[i * 3] = list.get(i)[0];
+            buffer[i * 3 + 1] = list.get(i)[1];
+            buffer[i * 3 + 2] = list.get(i)[2];
+        }
+        
+        for(int j = list.size(); j < TransparentColorController.MAX_KEYS; j++) {
+            buffer[j * 3] = -100.0f;
+            buffer[j * 3 + 1] = -100.0f;
+            buffer[j * 3 + 2] = -100.0f;
+        }
+        
+        return buffer;
     }
     
     public static class VertexShader {
@@ -240,7 +280,7 @@ public class Shaders {
             return fragmentShaderCode;
         }
         
-        private static String textureChromaKeyBlend() {
+        private static String textureChromaKeyBlend2() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
                     + "precision mediump float;\n"
@@ -262,6 +302,45 @@ public class Shaders {
                     + "float g = Ca.g * alpha + (1.0 - alpha) * Cb.g; \n"
                     + "float b = Ca.b * alpha + (1.0 - alpha) * Cb.b; \n"
                     + "  gl_FragColor = vec4(r, g, b, 1.0);\n"
+                    + "}";
+            return fragmentShaderCode;
+        }
+        
+        private static String textureChromaKeyBlend() {
+            final String fragmentShaderCode
+                    = "#extension GL_OES_EGL_image_external : require\n"
+                    + "precision mediump float;\n"
+                    + "varying vec2 vTextureCoord;\n"
+                    + "uniform int uNumOfKeys;\n"
+                    + "uniform vec3 uKeys[10];\n"
+                    + "uniform vec3 uThresholds[10];\n"
+                    + "uniform samplerExternalOES sTexture1;\n"
+                    + "uniform samplerExternalOES sTexture2;\n"
+                    + "void isCloseToKey(in vec4 Ca, in int index, out bool isClose) {\n"
+                    + "     float yDiff = 0.299 * (Ca.r - uKeys[index].x) + 0.587 * (Ca.g - uKeys[index].y) + 0.114 * (Ca.b - uKeys[index].z); \n"
+                    + "     float uDiff = -0.1471 * (Ca.r - uKeys[index].x) - 0.28886 * (Ca.g - uKeys[index].y) + 0.436 * (Ca.b - uKeys[index].z); \n"
+                    + "     float vDiff = 0.615 * (Ca.r - uKeys[index].x) - 0.51499 * (Ca.g - uKeys[index].y) - 0.10001 * (Ca.b - uKeys[index].z); \n"
+                    + "     if(abs(yDiff) < uThresholds[index].x && abs(uDiff) < uThresholds[index].y && abs(vDiff) < uThresholds[index].z) \n"
+                    + "         isClose = true;\n"
+                    + "     else\n"
+                    + "         isClose = false;\n"
+                    + "}\n"
+                    + "void main() {\n"
+                    + "     vec4 Ca = texture2D(sTexture1, vTextureCoord); \n"
+                    + "     vec4 Cb = texture2D(sTexture2, vTextureCoord); \n"
+                    + "     float alpha = 1.0; \n"
+                    + "     for(int i = 0; i < uNumOfKeys; i++) {\n"
+                    + "         bool isClose = false;\n"
+                    + "         isCloseToKey(Ca, i, isClose);\n"
+                    + "         if(isClose) {\n"
+                    + "             alpha = 0.0;\n"
+                    + "             break;\n"
+                    + "         }\n"
+                    + "     }\n"
+                    + "     float r = Ca.r * alpha + (1.0 - alpha) * Cb.r; \n"
+                    + "     float g = Ca.g * alpha + (1.0 - alpha) * Cb.g; \n"
+                    + "     float b = Ca.b * alpha + (1.0 - alpha) * Cb.b; \n"
+                    + "     gl_FragColor = vec4(r, g, b, 1.0);\n"
                     + "}";
             return fragmentShaderCode;
         }
