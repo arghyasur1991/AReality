@@ -26,6 +26,7 @@ public class VideoSurface{
     }
     
     public void setMedia(String filePath) {
+        mMediaPlayer.reset();
         try {
             mMediaPlayer.setDataSource(filePath);
         } catch (IOException ex) {
@@ -66,10 +67,13 @@ public class VideoSurface{
     }
     
     public void release() {
-        mMediaPlayer.pause();
-        mMediaPlayer.stop();
-        mMediaPlayer.release();
-        mSurface.release();
+        if(mMediaPlayer != null) {
+            mMediaPlayer.pause();
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+        }
+        if(mSurface != null)
+            mSurface.release();
     }
     
 }

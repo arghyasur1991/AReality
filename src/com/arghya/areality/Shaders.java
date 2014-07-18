@@ -7,6 +7,7 @@
 package com.arghya.areality;
 
 import android.opengl.GLES20;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 /**
@@ -80,28 +81,21 @@ public class Shaders {
                 texHandle = GLES20.glGetUniformLocation(mProgram, "sTexture1");
                 int texHandle2 = GLES20.glGetUniformLocation(mProgram, "sTexture2");
                 
-                if(true) {
-                    ArrayList<float[]> keys = mRenderer.getKeys();
-                    ArrayList<float[]> tolerances = mRenderer.getTolerances();
+                ArrayList<float[]> keys = mRenderer.getKeys();
+                ArrayList<float[]> tolerances = mRenderer.getTolerances();
 
-                    int numKeysHandle = GLES20.glGetUniformLocation(mProgram, "uNumOfKeys");
-                    GLES20.glUniform1i(numKeysHandle, keys.size());
+                int numKeysHandle = GLES20.glGetUniformLocation(mProgram, "uNumOfKeys");
+                GLES20.glUniform1i(numKeysHandle, keys.size());
 
-                    float[] keyBuffer = getBuffer(keys);
+                float[] keyBuffer = getBuffer(keys);
 
-                    float[] toleranceBuffer = getBuffer(tolerances);
+                float[] toleranceBuffer = getBuffer(tolerances);
 
-                    int keysHandle = GLES20.glGetUniformLocation(mProgram, "uKeys");
-                    GLES20.glUniform3fv(keysHandle, TransparentColorController.MAX_KEYS, keyBuffer, 0);
+                int keysHandle = GLES20.glGetUniformLocation(mProgram, "uKeys");
+                GLES20.glUniform3fv(keysHandle, TransparentColorController.MAX_KEYS, keyBuffer, 0);
 
-                    int toleranceHandle = GLES20.glGetUniformLocation(mProgram, "uThresholds");
-                    GLES20.glUniform3fv(toleranceHandle, TransparentColorController.MAX_KEYS, toleranceBuffer, 0);
-                }
-                else if(false){
-                    float[] key2 = {-100.0f, -100.0f, -100.0f, -100.f};
-                    int chromaKeyHandle2 = GLES20.glGetUniformLocation(mProgram, "uKey");
-                    GLES20.glUniform4fv(chromaKeyHandle2, 1, key2, 0);
-                }
+                int toleranceHandle = GLES20.glGetUniformLocation(mProgram, "uThresholds");
+                GLES20.glUniform3fv(toleranceHandle, TransparentColorController.MAX_KEYS, toleranceBuffer, 0);
                 
                 GLES20.glUniform1i(texHandle, mTextureIndex);
                 GLES20.glUniform1i(texHandle2, mTextureIndex + 1);

@@ -6,7 +6,6 @@
 
 package com.arghya.areality;
 
-import android.content.Context;
 import android.graphics.Point;
 import android.opengl.GLES20;
 import java.nio.ByteBuffer;
@@ -28,6 +27,8 @@ public class TransparentColorController {
     private final ArrayList<float[]> mColorList;
     private final ArrayList<float[]> mTolerances;
     private final ColorListAdapter mListAdapter;
+    
+    private final float[] mToleranceFactor = {0.2f, 0.15f, 0.15f};
     private int mMode;
     
     public TransparentColorController(MainActivity context) {
@@ -110,9 +111,7 @@ public class TransparentColorController {
             }
                 
             mColorList.add(color);
-            
-            float[] tolerance = {0.2f, 0.15f, 0.15f};
-            mTolerances.add(tolerance);
+            mTolerances.add(mToleranceFactor);
             
             notifyDataChangedAdapter();
         }
@@ -150,8 +149,7 @@ public class TransparentColorController {
             mColorList.add(color);
             
             mTolerances.clear();
-            float[] tolerance = {0.2f, 0.15f, 0.15f};
-            mTolerances.add(tolerance);
+            mTolerances.add(mToleranceFactor);
 
             notifyDataChangedAdapter();
         }

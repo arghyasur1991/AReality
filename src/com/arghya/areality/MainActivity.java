@@ -24,14 +24,11 @@ import java.util.ArrayList;
 public class MainActivity extends Activity {
     
     private GLCameraSurfaceView mGlSurfaceView;
-    private ColorListAdapter mColorListAdapter;
     
     Screenshot mScreenshot;
     private boolean mRecordingEnabled;      // controls button state
     private int mWidth;
     private int mHeight;
-    
-    private float mCurrentPreviewScale = 1.0f;
     
     private final static TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
 
@@ -42,24 +39,18 @@ public class MainActivity extends Activity {
         
         mGlSurfaceView = new GLCameraSurfaceView(this);
         
-        RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(
-                (int)(mCurrentPreviewScale * mWidth), (int) (mCurrentPreviewScale * mHeight));
-        //previewParams.addRule(RelativeLayout.CENTER_VERTICAL);
-        
         mScreenshot = new Screenshot(mGlSurfaceView);
         
         setContentView(R.layout.main);
         
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.MainFrame);
         
-        layout.addView(mGlSurfaceView, 0, previewParams);
+        layout.addView(mGlSurfaceView, 0);
         final Button captureButton = (Button) findViewById(R.id.CaptureScreenButton);
         final Button recordButton = (Button) findViewById(R.id.ToggleRecordingButton);
         
         GridView listview = (GridView) findViewById(R.id.KeyList);
-        
-        mColorListAdapter = mGlSurfaceView.getColorListAdapter();
-        listview.setAdapter(mColorListAdapter);
+        listview.setAdapter(mGlSurfaceView.getColorListAdapter());
         
         Switch toggle = (Switch) findViewById(R.id.ToggleCameraMode);
         
@@ -139,10 +130,6 @@ public class MainActivity extends Activity {
         });
     }
     
-    public ColorListAdapter getColorListAdapter() {
-        return mColorListAdapter;
-    }
-    
     private void getSize() {
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -150,18 +137,6 @@ public class MainActivity extends Activity {
         display.getSize(size);
         mWidth = size.x;
         mHeight = size.y;
-    }
-    
-    public void togglePreviewSize() {
-        if(mCurrentPreviewScale == 1.0f)
-            mCurrentPreviewScale = 0.8f;
-        else
-            mCurrentPreviewScale = 1.0f;
-        
-        RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(
-                (int) (mCurrentPreviewScale * mWidth), (int) (mCurrentPreviewScale * mHeight));
-        
-        mGlSurfaceView.setLayoutParams(previewParams);
     }
     
     /**
