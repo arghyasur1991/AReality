@@ -76,6 +76,16 @@
                      android:background = "@drawable/add_color_mode"/>
     </RadioGroup>
     
+    <Button
+        android:id="@+id/ClearColorsButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_toRightOf="@id/ChangeSelectColorMode"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/clear_all">
+    </Button>
+    
     <SeekBar
         android:id="@+id/tolerance"
         android:layout_width="100dp"
@@ -96,7 +106,8 @@
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:text="Select Media"
-        android:layout_centerHorizontal="true">
+        android:layout_toRightOf="@id/ClearColorsButton"
+        android:layout_marginLeft="30dp">
     </Button>
 
 </RelativeLayout>

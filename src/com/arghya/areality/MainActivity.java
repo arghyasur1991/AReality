@@ -102,6 +102,15 @@ public class MainActivity extends Activity {
                     }
                 });
         
+        setButtonOnClick(R.id.ClearColorsButton,
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        glSurfaceView.clearKeyList();
+                    }
+                });
+        
         RadioGroup modeSelect = (RadioGroup) findViewById(R.id.ChangeSelectColorMode);
         
         modeSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

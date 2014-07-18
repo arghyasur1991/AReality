@@ -74,8 +74,24 @@ public class TransparentColorController {
         return mTolerances;
     }
     
+    private boolean isClose(float[] color, int keyIndex) {
+        float[] key = mColorList.get(keyIndex);
+        float[] tolerance = mTolerances.get(keyIndex);
+        
+        float yDiff = 0.299f * (color[0] - key[0]) + 0.587f * (color[1] - key[1]) + 0.114f * (color[2] - key[2]);
+        float uDiff = -0.1471f * (color[0] - key[0]) - 0.28886f * (color[1] - key[1]) + 0.436f * (color[2] - key[2]);
+        float vDiff = 0.615f * (color[0] - key[0]) - 0.51499f * (color[1] - key[1]) - 0.10001f * (color[2] - key[2]);
+        
+        return (Math.abs(yDiff) < tolerance[0] && Math.abs(uDiff) < tolerance[1] && Math.abs(vDiff) < tolerance[2]);
+    }
+    
     private void addColor(float[] color) {
         if(validateColor(color)) {
+            for(int i = 0; i < mColorList.size(); i++) {
+                if(isClose(color, i))
+                    return;
+            }
+                
             mColorList.add(color);
             
             float[] tolerance = {0.2f, 0.15f, 0.15f};
@@ -85,12 +101,7 @@ public class TransparentColorController {
     
     private void addColor(int[] color) {
         float[] colorF = convertIntToFloat(color);
-        if (validateColor(colorF)) {
-            mColorList.add(colorF);
-
-            float[] tolerance = {0.2f, 0.15f, 0.15f};
-            mTolerances.add(tolerance);
-        }
+        addColor(colorF);
     }
     
     private float[] convertIntToFloat(int[] color) {

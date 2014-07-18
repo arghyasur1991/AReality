@@ -83,6 +83,15 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         });
     }
     
+    public void clearKeyList() {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                renderer.clearKeys();
+            }
+        });
+    }
+    
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event != null) {

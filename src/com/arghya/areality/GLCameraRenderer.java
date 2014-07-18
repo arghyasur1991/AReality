@@ -211,6 +211,10 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         mVideoSurface.start(mTextureList.get(1));
     }
     
+    public void clearKeys() {
+        mTCController.removeAll();
+    }
+    
     private void createTexture2D() {
         int[] texture = new int[1];
         GLES20.glGenTextures(1, texture, 0);

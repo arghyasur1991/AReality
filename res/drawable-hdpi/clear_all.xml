@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">    
+    <item android:drawable="@drawable/green_button_inset">
+    </item>
+    <item android:drawable="@drawable/clear_inset">
+    </item>
+</layer-list>
