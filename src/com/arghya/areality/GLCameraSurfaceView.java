@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
+import java.util.ArrayList;
 
 /**
  *
@@ -19,7 +20,7 @@ import android.view.MotionEvent;
  */
 public class GLCameraSurfaceView extends GLSurfaceView {
 
-    GLCameraRenderer renderer;
+    GLCameraRenderer mRenderer;
 
     public GLCameraSurfaceView(Context context) {
         super(context);
@@ -32,8 +33,8 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         getHolder().setFormat(PixelFormat.RGBA_8888);
         */
         
-        renderer = new GLCameraRenderer((MainActivity) context);
-        setRenderer(renderer);
+        mRenderer = new GLCameraRenderer((MainActivity) context);
+        setRenderer(mRenderer);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
     }
     
@@ -60,7 +61,7 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         queueEvent(new Runnable() {
             @Override
             public void run() {
-                renderer.changeRecordingState(recordingEnabled);
+                mRenderer.changeRecordingState(recordingEnabled);
             }
         });
     }
@@ -69,7 +70,7 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         queueEvent(new Runnable() {
             @Override
             public void run() {
-                renderer.setMedia(filePath);
+                mRenderer.setMedia(filePath);
             }
         });
     }
@@ -78,7 +79,7 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         queueEvent(new Runnable() {
             @Override
             public void run() {
-                renderer.setSelectMode(mode);
+                mRenderer.setSelectMode(mode);
             }
         });
     }
@@ -87,16 +88,24 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         queueEvent(new Runnable() {
             @Override
             public void run() {
-                renderer.clearKeys();
+                mRenderer.clearKeys();
             }
         });
+    }
+    
+    public ArrayList<float[]> getKeys() {
+        return mRenderer.getKeys();
+    }
+    
+    public ColorListAdapter getColorListAdapter() {
+        return mRenderer.getColorListAdapter();
     }
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event != null) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                if (renderer != null) {
+                if (mRenderer != null) {
                     // Ensure we call switchMode() on the OpenGL thread.
                     // queueEvent() is a method of GLSurfaceView that will do this for us.
                     
@@ -107,7 +116,7 @@ public class GLCameraSurfaceView extends GLSurfaceView {
                     queueEvent(new Runnable() {
                         @Override
                         public void run() {
-                            renderer.handleTouchAtCoordinate(p);
+                            mRenderer.handleTouchAtCoordinate(p);
                         }
                     });
 
@@ -123,7 +132,7 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         queueEvent(new Runnable() {
             @Override
             public void run() {
-                renderer.release();
+                mRenderer.release();
             }
         });
     }

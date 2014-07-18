@@ -2,7 +2,9 @@ package com.arghya.areality;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -11,14 +13,18 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import java.io.File;
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     
-    private GLCameraSurfaceView glSurfaceView;
+    private GLCameraSurfaceView mGlSurfaceView;
+    private ColorListAdapter mColorListAdapter;
     
     Screenshot mScreenshot;
     private boolean mRecordingEnabled;      // controls button state
@@ -34,23 +40,29 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         getSize();
         
-        glSurfaceView = new GLCameraSurfaceView(this);
+        mGlSurfaceView = new GLCameraSurfaceView(this);
         
         RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(
                 (int)(mCurrentPreviewScale * mWidth), (int) (mCurrentPreviewScale * mHeight));
         //previewParams.addRule(RelativeLayout.CENTER_VERTICAL);
         
-        mScreenshot = new Screenshot(glSurfaceView);
+        mScreenshot = new Screenshot(mGlSurfaceView);
         
         setContentView(R.layout.main);
         
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.MainFrame);
         
-        layout.addView(glSurfaceView, 0, previewParams);
+        layout.addView(mGlSurfaceView, 0, previewParams);
         final Button captureButton = (Button) findViewById(R.id.CaptureScreenButton);
         final Button recordButton = (Button) findViewById(R.id.ToggleRecordingButton);
         
+        GridView listview = (GridView) findViewById(R.id.KeyList);
+        
+        mColorListAdapter = mGlSurfaceView.getColorListAdapter();
+        listview.setAdapter(mColorListAdapter);
+        
         Switch toggle = (Switch) findViewById(R.id.ToggleCameraMode);
+        
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
@@ -98,7 +110,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
-                        glSurfaceView.setMedia(fileName);
+                        mGlSurfaceView.setMedia(fileName);
                     }
                 });
         
@@ -107,7 +119,7 @@ public class MainActivity extends Activity {
 
                     @Override
                     public void onClick(View v) {
-                        glSurfaceView.clearKeyList();
+                        mGlSurfaceView.clearKeyList();
                     }
                 });
         
@@ -122,9 +134,13 @@ public class MainActivity extends Activity {
                     mode = TransparentColorController.SELECT_COLOR_MODE;
                 else if(id == R.id.addColor)
                     mode = TransparentColorController.ADD_COLOR_MODE;
-                glSurfaceView.setSelectMode(mode);
+                mGlSurfaceView.setSelectMode(mode);
             }
         });
+    }
+    
+    public ColorListAdapter getColorListAdapter() {
+        return mColorListAdapter;
     }
     
     private void getSize() {
@@ -145,7 +161,7 @@ public class MainActivity extends Activity {
         RelativeLayout.LayoutParams previewParams = new RelativeLayout.LayoutParams(
                 (int) (mCurrentPreviewScale * mWidth), (int) (mCurrentPreviewScale * mHeight));
         
-        glSurfaceView.setLayoutParams(previewParams);
+        mGlSurfaceView.setLayoutParams(previewParams);
     }
     
     /**
@@ -154,7 +170,7 @@ public class MainActivity extends Activity {
     public void clickToggleRecording() {
         mRecordingEnabled = !mRecordingEnabled;
         
-        glSurfaceView.changeRecordingState(mRecordingEnabled);
+        mGlSurfaceView.changeRecordingState(mRecordingEnabled);
         updateControls();
     }
     
@@ -178,12 +194,12 @@ public class MainActivity extends Activity {
     }
     
     synchronized public void requestRender() {
-        glSurfaceView.requestRender();
+        mGlSurfaceView.requestRender();
     }
 
     @Override
     public void onPause() {
-        glSurfaceView.release();
+        mGlSurfaceView.release();
         System.exit(0);
     }
 }

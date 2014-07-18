@@ -6,6 +6,7 @@
 
 package com.arghya.areality;
 
+import android.content.Context;
 import android.graphics.Point;
 import android.opengl.GLES20;
 import java.nio.ByteBuffer;
@@ -22,14 +23,26 @@ public class TransparentColorController {
     public static final int ADD_COLOR_MODE = 2;
     public static final int MAX_KEYS = 10;
     
+    private final MainActivity mActivity;
+    
     private final ArrayList<float[]> mColorList;
     private final ArrayList<float[]> mTolerances;
+    private final ColorListAdapter mListAdapter;
     private int mMode;
     
-    public TransparentColorController() {
+    public TransparentColorController(MainActivity context) {
         mColorList = new ArrayList<float[]>();
         mTolerances = new ArrayList<float[]>();
         mMode = NO_SELECT_MODE;
+        
+        mActivity = context;
+        
+        mListAdapter = new ColorListAdapter(context, R.layout.main, mColorList);
+        
+        /*float[] c = {0,0,0};
+        float[] c1 = {1, 0, 0};
+        addColor(c);
+        addColor(c1);*/
     }
     
     public int getMode() {
@@ -38,6 +51,10 @@ public class TransparentColorController {
     
     public void setMode(int mode) {
         mMode = mode;
+    }
+    
+    public ColorListAdapter getListAdapter() {
+        return mListAdapter;
     }
     
     public void handleTouchAtCoordinate(Point p) {
@@ -96,7 +113,20 @@ public class TransparentColorController {
             
             float[] tolerance = {0.2f, 0.15f, 0.15f};
             mTolerances.add(tolerance);
+            
+            notifyDataChangedAdapter();
         }
+    }
+    
+    private void notifyDataChangedAdapter() {
+        mActivity.runOnUiThread(new Runnable() {
+
+            public void run() {
+                if (mListAdapter != null) {
+                    mListAdapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
     
     private void addColor(int[] color) {
@@ -122,17 +152,25 @@ public class TransparentColorController {
             mTolerances.clear();
             float[] tolerance = {0.2f, 0.15f, 0.15f};
             mTolerances.add(tolerance);
+
+            notifyDataChangedAdapter();
         }
     }
     
     public void removeColor(int index) {
         mColorList.remove(index);
         mTolerances.remove(index);
+
+        if (mListAdapter != null) {
+            mListAdapter.notifyDataSetChanged();
+        }
     }
     
     public void removeAll() {
         mColorList.clear();
         mTolerances.clear();
+
+        notifyDataChangedAdapter();
     }
     
     private boolean validateColor(float[] color) {

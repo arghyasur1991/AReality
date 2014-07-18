@@ -61,11 +61,8 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         mCameraSurface = new CameraSurface(mDelegate);
         mVideoSurface = new VideoSurface();
         
-        //String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
-
-        //mVideoSurface.setMedia(fileName);
         mVideoEncoder = mDelegate.getEncoder();
-        mTCController = new TransparentColorController();
+        mTCController = new TransparentColorController(mDelegate);
         
         mRecordingStatus = -1;
         mRecordingEnabled = false;
@@ -111,6 +108,10 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     
     public ArrayList<float[]> getKeys() {
         return mTCController.getKeys();
+    }
+    
+    public ColorListAdapter getColorListAdapter() {
+        return mTCController.getListAdapter();
     }
     
     public ArrayList<float[]> getTolerances() {
