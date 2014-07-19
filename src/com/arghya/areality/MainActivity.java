@@ -31,6 +31,8 @@ public class MainActivity extends Activity {
     private int mWidth;
     private int mHeight;
     
+    private ModeSelection mModeSelection;
+    
     private final static TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
 
     @Override
@@ -119,32 +121,7 @@ public class MainActivity extends Activity {
                     }
                 });
         
-        RadioGroup modeSelect = (RadioGroup) findViewById(R.id.ChangeSelectColorMode);
-        
-        RadioButton noSelectButton = (RadioButton) findViewById(R.id.noSelect);
-        DrawableLayeredButton db1 = new DrawableLayeredButton(this, R.drawable.camera, true);
-        noSelectButton.setBackground(db1.getDrawable());
-        
-        RadioButton selectButton = (RadioButton) findViewById(R.id.selectColor);
-        DrawableLayeredButton db2 = new DrawableLayeredButton(this, R.drawable.select, true);
-        selectButton.setBackground(db2.getDrawable());
-        
-        RadioButton addButton = (RadioButton) findViewById(R.id.addColor);
-        DrawableLayeredButton db3 = new DrawableLayeredButton(this, R.drawable.plus, true);
-        addButton.setBackground(db3.getDrawable());
-        
-        modeSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                int id = group.getCheckedRadioButtonId();
-                int mode = TransparentColorController.NO_SELECT_MODE;
-                if(id == R.id.selectColor)
-                    mode = TransparentColorController.SELECT_COLOR_MODE;
-                else if(id == R.id.addColor)
-                    mode = TransparentColorController.ADD_COLOR_MODE;
-                mGlSurfaceView.setSelectMode(mode);
-            }
-        });
+        mModeSelection = new ModeSelection(this);
     }
     
     private void getSize() {
@@ -193,5 +170,9 @@ public class MainActivity extends Activity {
     public void onPause() {
         mGlSurfaceView.release();
         System.exit(0);
+    }
+
+    public void setSelectMode(int mode) {
+        mGlSurfaceView.setSelectMode(mode);
     }
 }
