@@ -41,7 +41,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     private final float[] mRotationMatrix = new float[16];
     private final float[] mSTMatrix = new float[16];
 
-    private TransparentColorController mTCController;
+    private final TransparentColorController mTCController;
     
     private final CameraSurface mCameraSurface;
     private final VideoSurface mVideoSurface;

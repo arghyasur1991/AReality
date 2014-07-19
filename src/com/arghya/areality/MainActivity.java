@@ -24,79 +24,31 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     
-    private GLCameraSurfaceView mGlSurfaceView;
-    
-    Screenshot mScreenshot;
-    private boolean mRecordingEnabled;      // controls button state
-    private int mWidth;
-    private int mHeight;
-    
+    private GLCameraSurfaceView mGLSurfaceView;
+    private CameraModeController mCameraModeController;
     private ModeSelection mModeSelection;
-    
-    private final static TextureMovieEncoder sVideoEncoder = new TextureMovieEncoder();
+    private ToggleEditMode mToggleEditMode;
+    private TextureMovieEncoder sVideoEncoder;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSize();
-        
-        mGlSurfaceView = new GLCameraSurfaceView(this);
-        
-        mScreenshot = new Screenshot(mGlSurfaceView);
-        
+
         setContentView(R.layout.main);
-        
+
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.MainFrame);
         
-        layout.addView(mGlSurfaceView, 0);
-        final Button captureButton = (Button) findViewById(R.id.CaptureScreenButton);
-        final Button recordButton = (Button) findViewById(R.id.ToggleRecordingButton);
+        sVideoEncoder = new TextureMovieEncoder();
+        
+        mCameraModeController = new CameraModeController(this);
+        mGLSurfaceView = mCameraModeController.getGLView();
+        layout.addView(mGLSurfaceView, 0);
+        
+        mToggleEditMode = new ToggleEditMode(this);
+        mModeSelection = new ModeSelection(this);
         
         GridView listview = (GridView) findViewById(R.id.KeyList);
-        listview.setAdapter(mGlSurfaceView.getColorListAdapter());
-        
-        Switch toggle = (Switch) findViewById(R.id.ToggleCameraMode);
-        
-        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!isChecked) {
-                    captureButton.setVisibility(View.VISIBLE);
-                    recordButton.setVisibility(View.GONE);
-                    
-                } else {
-                    captureButton.setVisibility(View.GONE);
-                    recordButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-        
-        setButtonOnClick(R.id.CaptureScreenButton,
-                new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        //mScreenshot.capture();
-                    }
-                });
-        
-        setButtonOnClick(R.id.ToggleRecordingButton,
-                new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        //clickToggleRecording();
-                    }
-                });
-        
-        setButtonOnClick(R.id.ToggleEditModeButton,
-                new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        Button editToggle = (Button) findViewById(R.id.ToggleEditModeButton);
-                        editToggle.setActivated(!editToggle.isActivated());
-                    }
-                });
+        listview.setAdapter(mGLSurfaceView.getColorListAdapter());
         
         setButtonOnClick(R.id.ChooseMediaButton,
                 new View.OnClickListener() {
@@ -104,7 +56,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
-                        mGlSurfaceView.setMedia(fileName);
+                        mGLSurfaceView.setMedia(fileName);
                     }
                 });
         
@@ -117,45 +69,16 @@ public class MainActivity extends Activity {
 
                     @Override
                     public void onClick(View v) {
-                        mGlSurfaceView.clearKeyList();
+                        mGLSurfaceView.clearKeyList();
                     }
                 });
-        
-        mModeSelection = new ModeSelection(this);
-    }
-    
-    private void getSize() {
-        WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        mWidth = size.x;
-        mHeight = size.y;
-    }
-    
-    /**
-     * onClick handler for "record" button.
-     */
-    public void clickToggleRecording() {
-        mRecordingEnabled = !mRecordingEnabled;
-        
-        mGlSurfaceView.changeRecordingState(mRecordingEnabled);
-        updateControls();
-    }
-    
-    /**
-     * Updates the on-screen controls to reflect the current state of the app.
-     */
-    private void updateControls() {
-        Button toggleRelease = (Button) findViewById(R.id.ToggleRecordingButton);
-        toggleRelease.setActivated(mRecordingEnabled); 
     }
     
     public TextureMovieEncoder getEncoder() {
         return sVideoEncoder;
     }
     
-    private void setButtonOnClick(int buttonId, View.OnClickListener onClickListener) {
+    public void setButtonOnClick(int buttonId, View.OnClickListener onClickListener) {
         Button button = (Button) findViewById(buttonId);
         if (button != null) {
             button.setOnClickListener(onClickListener);
@@ -163,16 +86,16 @@ public class MainActivity extends Activity {
     }
     
     synchronized public void requestRender() {
-        mGlSurfaceView.requestRender();
+        mGLSurfaceView.requestRender();
     }
 
     @Override
     public void onPause() {
-        mGlSurfaceView.release();
+        mGLSurfaceView.release();
         System.exit(0);
     }
 
     public void setSelectMode(int mode) {
-        mGlSurfaceView.setSelectMode(mode);
+        mGLSurfaceView.setSelectMode(mode);
     }
 }

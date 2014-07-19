@@ -49,71 +49,79 @@
         android:background="@drawable/arrow_resource">
     </Button>
     
-    <RadioGroup
-        android:id="@+id/ChangeSelectColorMode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginLeft="100dp">
+    <RelativeLayout
+        android:id="@+id/EditFrame"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
         
-        <RadioButton android:id="@+id/noSelect"
+        <RadioGroup
+            android:id="@+id/ChangeSelectColorMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="100dp">
+        
+            <RadioButton android:id="@+id/noSelect"
                      android:layout_width="40dp"
                      android:layout_height="40dp"
                      android:button="@android:color/transparent"
                      android:checked="true"/>
         
-        <RadioButton android:id="@+id/selectColor"
+            <RadioButton android:id="@+id/selectColor"
                      android:layout_width="40dp"
                      android:layout_height="40dp"
                      android:button="@android:color/transparent"/>
         
-        <RadioButton android:id="@+id/addColor"
+            <RadioButton android:id="@+id/addColor"
                      android:layout_width="40dp"
                      android:layout_height="40dp"
                      android:button="@android:color/transparent"/>
-    </RadioGroup>
+        </RadioGroup>
     
-    <Button
-        android:id="@+id/ClearColorsButton"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_toRightOf="@id/ChangeSelectColorMode"
-        android:layout_marginLeft="10dp">
-    </Button>
+        <Button
+            android:id="@+id/ClearColorsButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_toRightOf="@id/ChangeSelectColorMode"
+            android:layout_marginLeft="10dp">
+        </Button>
     
-    <SeekBar
-        android:id="@+id/tolerance"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:max="100"
-        android:layout_centerVertical="true"
-        android:progressDrawable="@drawable/progress"
-        android:thumb="@drawable/thumb"
-        android:thumbOffset="-1dp"
-        android:progress="0"
-        android:secondaryProgress="0"
-        android:rotation="270">
+        <SeekBar
+            android:id="@+id/tolerance"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:layout_centerVertical="true"
+            android:progressDrawable="@drawable/progress"
+            android:thumb="@drawable/thumb"
+            android:thumbOffset="-1dp"
+            android:progress="0"
+            android:secondaryProgress="0"
+            android:rotation="270">
         
-    </SeekBar>
+        </SeekBar>
     
-    <Button
-        android:id="@+id/ChooseMediaButton"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:text="Select Media"
-        android:layout_toRightOf="@id/ClearColorsButton"
-        android:layout_marginLeft="30dp">
-    </Button>
+        <Button
+            android:id="@+id/ChooseMediaButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Select Media"
+            android:layout_toRightOf="@id/ClearColorsButton"
+            android:layout_marginLeft="30dp">
+        </Button>
     
-    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/KeyList"
-            android:layout_width="350dp"
-            android:layout_height="40dp" 
-            android:columnWidth="30dp"
-            android:numColumns="10"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/gradient_box"/> 
-
+        <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/KeyList"
+              android:layout_width="350dp"
+              android:layout_height="40dp" 
+              android:columnWidth="30dp"
+              android:numColumns="10"
+              android:layout_alignParentBottom="true"
+              android:background="@drawable/gradient_box"/> 
+        
+    </RelativeLayout>
 </RelativeLayout>
 

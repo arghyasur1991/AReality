@@ -6,8 +6,6 @@
 
 package com.arghya.areality;
 
-import android.app.Activity;
-import android.content.Context;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import java.util.ArrayList;
