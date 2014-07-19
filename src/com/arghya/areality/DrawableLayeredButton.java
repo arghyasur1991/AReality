@@ -8,6 +8,8 @@ package com.arghya.areality;
 
 import android.content.Context;
 import android.graphics.drawable.*;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.Shape;
 
 /**
  *
@@ -25,8 +27,13 @@ public class DrawableLayeredButton {
         
         InsetDrawable top_layer_inset = new InsetDrawable(top_layer, convertToPx(8));
         InsetDrawable green_button_inset = new InsetDrawable(green_button, convertToPx(5));
-        
-        Drawable border = context.getResources().getDrawable(R.drawable.ring_border);
+
+        int width = convertToPx(40);
+        int height = convertToPx(40);
+
+        ShapeDrawable border = new ShapeDrawable(new OvalShape());
+        border.getPaint().setColor(0xffabab25);
+        border.setBounds(0, 0, width, height);
         
         Drawable[] nonActivatedlayers = new Drawable[2];
         nonActivatedlayers[0] = green_button_inset;
