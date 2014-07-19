@@ -58,7 +58,7 @@ public class CameraModeController {
             }
         });
         
-        mActivity.setButtonOnClick(R.id.CaptureScreenButton,
+        Utilities.setButtonOnClick(R.id.CaptureScreenButton,
                 new View.OnClickListener() {
 
                     @Override
@@ -67,7 +67,7 @@ public class CameraModeController {
                     }
                 });
 
-        mActivity.setButtonOnClick(R.id.ToggleRecordingButton,
+        Utilities.setButtonOnClick(R.id.ToggleRecordingButton,
                 new View.OnClickListener() {
 
                     @Override

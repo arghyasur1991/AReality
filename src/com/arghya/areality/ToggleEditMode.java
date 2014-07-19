@@ -38,7 +38,7 @@ public class ToggleEditMode {
         mToggleEditModeButton = (Button) mActivity.findViewById(R.id.ToggleEditModeButton);
         
         mToEditAnimation = new AnimationSet(false);
-        Animation transAnimation1 = new TranslateAnimation(-1000, 0, 0, 0);
+        Animation transAnimation1 = new TranslateAnimation(-Utilities.convertToPx(300), 0, 0, 0);
         Animation alphaAnimation1 = new AlphaAnimation(0, 1);
 
         mToEditAnimation.addAnimation(alphaAnimation1);
@@ -46,14 +46,14 @@ public class ToggleEditMode {
         mToEditAnimation.setDuration(500);
         
         mToNoEditAnimation = new AnimationSet(false);
-        Animation transAnimation2 = new TranslateAnimation(0, -1000, 0, 0);
+        Animation transAnimation2 = new TranslateAnimation(0, -Utilities.convertToPx(300), 0, 0);
         Animation alphaAnimation2 = new AlphaAnimation(1, 0);
 
         mToNoEditAnimation.addAnimation(alphaAnimation2);
         mToNoEditAnimation.addAnimation(transAnimation2);
         mToNoEditAnimation.setDuration(500);
 
-        mActivity.setButtonOnClick(R.id.ToggleEditModeButton,
+        Utilities.setButtonOnClick(R.id.ToggleEditModeButton,
                 new View.OnClickListener() {
 
                     @Override

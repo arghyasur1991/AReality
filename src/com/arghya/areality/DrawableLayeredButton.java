@@ -9,7 +9,6 @@ package com.arghya.areality;
 import android.content.Context;
 import android.graphics.drawable.*;
 import android.graphics.drawable.shapes.OvalShape;
-import android.graphics.drawable.shapes.Shape;
 
 /**
  *
@@ -18,18 +17,16 @@ import android.graphics.drawable.shapes.Shape;
 public class DrawableLayeredButton {
     private static final int green_button_resource = R.drawable.common_green_button;
     private final StateListDrawable mDrawable;
-    private final Context mContext;
     
     public DrawableLayeredButton(Context context, int topLayer, boolean hasBorder) {
-        mContext = context;
         Drawable top_layer = context.getResources().getDrawable(topLayer);
         Drawable green_button = context.getResources().getDrawable(green_button_resource);
         
-        InsetDrawable top_layer_inset = new InsetDrawable(top_layer, convertToPx(8));
-        InsetDrawable green_button_inset = new InsetDrawable(green_button, convertToPx(5));
+        InsetDrawable top_layer_inset = new InsetDrawable(top_layer, Utilities.convertToPx(8));
+        InsetDrawable green_button_inset = new InsetDrawable(green_button, Utilities.convertToPx(5));
 
-        int width = convertToPx(40);
-        int height = convertToPx(40);
+        int width = Utilities.convertToPx(40);
+        int height = Utilities.convertToPx(40);
 
         ShapeDrawable border = new ShapeDrawable(new OvalShape());
         border.getPaint().setColor(0xffabab25);
@@ -61,12 +58,5 @@ public class DrawableLayeredButton {
     
     public Drawable getDrawable() {
         return mDrawable;
-    }
-    
-    private int convertToPx(int dp) {
-        // Get the screen's density scale
-        final float scale = mContext.getResources().getDisplayMetrics().density;
-        // Convert the dps to pixels, based on density scale
-        return (int) (dp * scale + 0.5f);
     }
 }

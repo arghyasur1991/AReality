@@ -1,13 +1,20 @@
 package com.arghya.areality;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -28,6 +35,7 @@ public class MainActivity extends Activity {
     private CameraModeController mCameraModeController;
     private ModeSelection mModeSelection;
     private ToggleEditMode mToggleEditMode;
+    private MediaChooser mMediaChooser;
     private TextureMovieEncoder sVideoEncoder;
 
     @Override
@@ -38,6 +46,8 @@ public class MainActivity extends Activity {
 
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.MainFrame);
         
+        Utilities.mActivity = this;
+        
         sVideoEncoder = new TextureMovieEncoder();
         
         mCameraModeController = new CameraModeController(this);
@@ -46,25 +56,16 @@ public class MainActivity extends Activity {
         
         mToggleEditMode = new ToggleEditMode(this);
         mModeSelection = new ModeSelection(this);
+        mMediaChooser = new MediaChooser(this);
         
         GridView listview = (GridView) findViewById(R.id.KeyList);
         listview.setAdapter(mGLSurfaceView.getColorListAdapter());
-        
-        setButtonOnClick(R.id.ChooseMediaButton,
-                new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        String fileName = Environment.getExternalStorageDirectory() + File.separator + "Frozen.mp4";
-                        mGLSurfaceView.setMedia(fileName);
-                    }
-                });
         
         Button clear = (Button) findViewById(R.id.ClearColorsButton);
         DrawableLayeredButton db = new DrawableLayeredButton(this, R.drawable.clear, false);
         clear.setBackground(db.getDrawable());
         
-        setButtonOnClick(R.id.ClearColorsButton,
+        Utilities.setButtonOnClick(R.id.ClearColorsButton,
                 new View.OnClickListener() {
 
                     @Override
@@ -78,24 +79,32 @@ public class MainActivity extends Activity {
         return sVideoEncoder;
     }
     
-    public void setButtonOnClick(int buttonId, View.OnClickListener onClickListener) {
-        Button button = (Button) findViewById(buttonId);
-        if (button != null) {
-            button.setOnClickListener(onClickListener);
-        }
-    }
-    
     synchronized public void requestRender() {
         mGLSurfaceView.requestRender();
     }
 
     @Override
-    public void onPause() {
+    public void onDestroy() {
         mGLSurfaceView.release();
-        System.exit(0);
+        super.onDestroy();
     }
 
     public void setSelectMode(int mode) {
         mGLSurfaceView.setSelectMode(mode);
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == MediaChooser.CHOOSE_MEDIA_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                String filePath = data.toUri(0);
+                Uri uri = Uri.parse(filePath);
+                
+                String path = MediaChooser.getPath(this, uri);
+                mGLSurfaceView.setMedia(path);
+            }
+        }
     }
 }
