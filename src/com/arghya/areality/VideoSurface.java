@@ -6,8 +6,6 @@
 
 package com.arghya.areality;
 
-import android.content.Context;
-import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.view.Surface;
 import java.io.IOException;
@@ -16,10 +14,8 @@ import java.io.IOException;
  *
  * @author sur
  */
-public class VideoSurface{
+public class VideoSurface extends MediaSurface{
     private final MediaPlayer mMediaPlayer;
-    private SurfaceTexture mSurface;
-    private int mTexture;
     
     public VideoSurface() {
         mMediaPlayer = new MediaPlayer();
@@ -40,11 +36,11 @@ public class VideoSurface{
         }
     }
     
+    @Override
     public void start(int texture) {
-        mTexture = texture;
-        mSurface = new SurfaceTexture(mTexture);
+        super.start(texture);
 
-        Surface surface = new Surface(mSurface);
+        Surface surface = new Surface(mSurfaceTexture);
         mMediaPlayer.setSurface(surface);
         surface.release();
 
@@ -57,23 +53,15 @@ public class VideoSurface{
         mMediaPlayer.start();
     }
     
-    public long getTimeStamp() {
-        return mSurface.getTimestamp();
-    }
-    
-    public void updateSurface() {
-        if(mSurface != null)
-            mSurface.updateTexImage();
-    }
-    
+    @Override
     public void release() {
         if(mMediaPlayer != null) {
             mMediaPlayer.pause();
             mMediaPlayer.stop();
             mMediaPlayer.release();
         }
-        if(mSurface != null)
-            mSurface.release();
+        
+        super.release();
     }
     
 }

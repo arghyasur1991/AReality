@@ -100,10 +100,14 @@ public class MainActivity extends Activity {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 String filePath = data.toUri(0);
+                int i = filePath.indexOf("image");
+                int type = MediaSurfaceController.IMAGE;
+                if(i == -1)
+                    type = MediaSurfaceController.VIDEO;
                 Uri uri = Uri.parse(filePath);
                 
                 String path = MediaChooser.getPath(this, uri);
-                mGLSurfaceView.setMedia(path);
+                mGLSurfaceView.setMedia(path, type);
             }
         }
     }

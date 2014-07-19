@@ -44,7 +44,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     private final TransparentColorController mTCController;
     
     private final CameraSurface mCameraSurface;
-    private final VideoSurface mVideoSurface;
+    private final MediaSurfaceController mMediaSurfaceController;
     
     private final TextureMovieEncoder mVideoEncoder;
     private boolean mRecordingEnabled;
@@ -59,7 +59,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         mTextureList = new ArrayList<Integer>();
         mSquareList = new ArrayList<Square>();
         mCameraSurface = new CameraSurface(mDelegate);
-        mVideoSurface = new VideoSurface();
+        mMediaSurfaceController = new MediaSurfaceController();
         
         mVideoEncoder = mDelegate.getEncoder();
         mTCController = new TransparentColorController(mDelegate);
@@ -131,7 +131,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         
         mCameraSurface.updateSurface(mSTMatrix);
-        mVideoSurface.updateSurface();
+        mMediaSurfaceController.updateSurface();
         
         // Set the camera position (View matrix)
         Matrix.setLookAtM(mViewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
@@ -207,9 +207,9 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
 
     }
     
-    public void setMedia(String filePath) {
-        mVideoSurface.setMedia(filePath);
-        mVideoSurface.start(mTextureList.get(1));
+    public void setMedia(String filePath, int type) {
+        mMediaSurfaceController.setMedia(filePath, type);
+        mMediaSurfaceController.start(mTextureList.get(1));
     }
     
     public void clearKeys() {
@@ -265,7 +265,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
 
     public void release() {
         mCameraSurface.release();
-        mVideoSurface.release();
+        mMediaSurfaceController.release();
         mVideoEncoder.release();
     }
 }

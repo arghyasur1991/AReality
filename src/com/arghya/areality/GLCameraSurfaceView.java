@@ -66,11 +66,11 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         });
     }
     
-    public void setMedia(final String filePath) {
+    public void setMedia(final String filePath, final int type) {
         queueEvent(new Runnable() {
             @Override
             public void run() {
-                mRenderer.setMedia(filePath);
+                mRenderer.setMedia(filePath, type);
             }
         });
     }
