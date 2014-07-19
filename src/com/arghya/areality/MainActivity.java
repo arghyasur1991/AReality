@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -105,6 +106,10 @@ public class MainActivity extends Activity {
                     }
                 });
         
+        Button clear = (Button) findViewById(R.id.ClearColorsButton);
+        DrawableLayeredButton db = new DrawableLayeredButton(this, R.drawable.clear, false);
+        clear.setBackground(db.getDrawable());
+        
         setButtonOnClick(R.id.ClearColorsButton,
                 new View.OnClickListener() {
 
@@ -115,6 +120,18 @@ public class MainActivity extends Activity {
                 });
         
         RadioGroup modeSelect = (RadioGroup) findViewById(R.id.ChangeSelectColorMode);
+        
+        RadioButton noSelectButton = (RadioButton) findViewById(R.id.noSelect);
+        DrawableLayeredButton db1 = new DrawableLayeredButton(this, R.drawable.camera, true);
+        noSelectButton.setBackground(db1.getDrawable());
+        
+        RadioButton selectButton = (RadioButton) findViewById(R.id.selectColor);
+        DrawableLayeredButton db2 = new DrawableLayeredButton(this, R.drawable.select, true);
+        selectButton.setBackground(db2.getDrawable());
+        
+        RadioButton addButton = (RadioButton) findViewById(R.id.addColor);
+        DrawableLayeredButton db3 = new DrawableLayeredButton(this, R.drawable.plus, true);
+        addButton.setBackground(db3.getDrawable());
         
         modeSelect.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 

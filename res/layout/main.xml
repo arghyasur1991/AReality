@@ -60,20 +60,17 @@
                      android:layout_width="40dp"
                      android:layout_height="40dp"
                      android:button="@android:color/transparent"
-                     android:background = "@drawable/no_selection_mode"
                      android:checked="true"/>
         
         <RadioButton android:id="@+id/selectColor"
                      android:layout_width="40dp"
                      android:layout_height="40dp"
-                     android:button="@android:color/transparent"
-                     android:background = "@drawable/select_color_mode"/>
+                     android:button="@android:color/transparent"/>
         
         <RadioButton android:id="@+id/addColor"
                      android:layout_width="40dp"
                      android:layout_height="40dp"
-                     android:button="@android:color/transparent"
-                     android:background = "@drawable/add_color_mode"/>
+                     android:button="@android:color/transparent"/>
     </RadioGroup>
     
     <Button
@@ -82,8 +79,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_toRightOf="@id/ChangeSelectColorMode"
-        android:layout_marginLeft="10dp"
-        android:background="@drawable/clear_all">
+        android:layout_marginLeft="10dp">
     </Button>
     
     <SeekBar
