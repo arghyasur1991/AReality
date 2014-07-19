@@ -7,6 +7,10 @@
 package com.arghya.areality;
 
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
@@ -24,11 +28,30 @@ public class ToggleEditMode {
     
     private final MainActivity mActivity;
     
+    private final AnimationSet mToEditAnimation;
+    private final AnimationSet mToNoEditAnimation;
+    
     public ToggleEditMode(MainActivity activity) {
         mActivity = activity;
         mEditLayout = (RelativeLayout) mActivity.findViewById(R.id.EditFrame);
         mMode = NO_EDIT_MODE;
         mToggleEditModeButton = (Button) mActivity.findViewById(R.id.ToggleEditModeButton);
+        
+        mToEditAnimation = new AnimationSet(false);
+        Animation transAnimation1 = new TranslateAnimation(-1000, 0, 0, 0);
+        Animation alphaAnimation1 = new AlphaAnimation(0, 1);
+
+        mToEditAnimation.addAnimation(alphaAnimation1);
+        mToEditAnimation.addAnimation(transAnimation1);
+        mToEditAnimation.setDuration(500);
+        
+        mToNoEditAnimation = new AnimationSet(false);
+        Animation transAnimation2 = new TranslateAnimation(0, -1000, 0, 0);
+        Animation alphaAnimation2 = new AlphaAnimation(1, 0);
+
+        mToNoEditAnimation.addAnimation(alphaAnimation2);
+        mToNoEditAnimation.addAnimation(transAnimation2);
+        mToNoEditAnimation.setDuration(500);
 
         mActivity.setButtonOnClick(R.id.ToggleEditModeButton,
                 new View.OnClickListener() {
@@ -37,10 +60,13 @@ public class ToggleEditMode {
                     public void onClick(View v) {
                         mToggleEditModeButton.setActivated(!mToggleEditModeButton.isActivated());
                         if(mToggleEditModeButton.isActivated()) {
+                            
                             mEditLayout.setVisibility(View.VISIBLE);
+                            mEditLayout.startAnimation(mToEditAnimation);
                             mMode = EDIT_MODE;
                         }
                         else {
+                            mEditLayout.startAnimation(mToNoEditAnimation);
                             mEditLayout.setVisibility(View.GONE);
                             mMode = NO_EDIT_MODE;
                         }
