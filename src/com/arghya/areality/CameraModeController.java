@@ -43,6 +43,8 @@ public class CameraModeController {
         mCaptureButton = (Button) mActivity.findViewById(R.id.CaptureScreenButton);
         mRecordingButton = (Button) mActivity.findViewById(R.id.ToggleRecordingButton);
         
+        mCaptureButton.setBackground(new CameraControlsDrawable(mActivity).getDrawable());
+        
         mToggleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {

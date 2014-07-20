@@ -22,10 +22,10 @@
         android:id="@+id/CaptureScreenButton"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_height="100dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/capture_button_resource">
+        android:layout_marginRight="5dp">
     </Button>
 
     <Button
