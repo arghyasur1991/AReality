@@ -40,16 +40,13 @@ public class CameraControlsDrawable {
         InsetDrawable innerRectNormalInset = getInnerRect(innerColorsNormal);
         
         mCameraDrawable = context.getResources().getDrawable(mCameraButtonResource);
-
         InsetDrawable cameraInset = new InsetDrawable(mCameraDrawable, Utilities.convertToPx(9),
                 Utilities.convertToPx(35), Utilities.convertToPx(9), Utilities.convertToPx(35));
         
         LayerDrawable normalStateLayer = getLayerDrawable(outerRect, innerRectNormalInset, cameraInset);
         
         int[] innerColorsPressed = {Color.rgb(100, 100, 100), Color.rgb(150, 150, 150)};
-
         InsetDrawable innerRectPressedInset = getInnerRect(innerColorsPressed);
-        
         LayerDrawable pressedStateLayer = getLayerDrawable(outerRect, innerRectPressedInset, cameraInset);
         
         mDrawable.addState(new int[]{android.R.attr.state_pressed},
@@ -82,6 +79,7 @@ public class CameraControlsDrawable {
         normalStateLayers[2] = camera;
 
         LayerDrawable layer = new LayerDrawable(normalStateLayers);
+        
         return layer;
     }
 }

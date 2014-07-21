@@ -65,7 +65,7 @@ public class CameraModeController {
 
                     @Override
                     public void onClick(View v) {
-                        mScreenshot.capture();
+                        //mScreenshot.capture();
                     }
                 });
 

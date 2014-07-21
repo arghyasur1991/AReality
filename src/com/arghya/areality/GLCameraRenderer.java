@@ -215,33 +215,6 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     public void clearKeys() {
         mTCController.removeAll();
     }
-    
-    private void createTexture2D() {
-        int[] texture = new int[1];
-        GLES20.glGenTextures(1, texture, 0);
-
-        // Retrieve our image from resources.
-        int id = mDelegate.getResources().getIdentifier("drawable/ic_launcher", null, mDelegate.getPackageName());
-
-        // Temporary create a bitmap
-        Bitmap bmp = BitmapFactory.decodeResource(mDelegate.getResources(), id);
-
-        // Bind texture to texturename
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + mTextureList.size());
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture[0]);
-
-        // Set filtering
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-
-        // Load the bitmap into the bound texture.
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bmp, 0);
-
-        // We are done using the bitmap so we should recycle it.
-        bmp.recycle();
-        
-        mTextureList.add(texture[0]);
-    }
 
     private void createExternalTexture() {
         int[] texture = new int[1];
