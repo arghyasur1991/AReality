@@ -52,15 +52,29 @@ public class ToggleEditMode {
         mToNoEditAnimation.addAnimation(alphaAnimation2);
         mToNoEditAnimation.addAnimation(transAnimation2);
         mToNoEditAnimation.setDuration(500);
+        
+        Animation.AnimationListener animListener = new Animation.AnimationListener() {
 
+            public void onAnimationStart(Animation animation) {
+            }
+
+            public void onAnimationEnd(Animation animation) {
+                mToggleEditModeButton.setActivated(!mToggleEditModeButton.isActivated());
+            }
+
+            public void onAnimationRepeat(Animation animation) {
+            }
+        };
+        
+        mToEditAnimation.setAnimationListener(animListener);
+        mToNoEditAnimation.setAnimationListener(animListener);
+                
         Utilities.setButtonOnClick(R.id.ToggleEditModeButton,
                 new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        mToggleEditModeButton.setActivated(!mToggleEditModeButton.isActivated());
-                        if(mToggleEditModeButton.isActivated()) {
-                            
+                        if(!mToggleEditModeButton.isActivated()) {
                             mEditLayout.setVisibility(View.VISIBLE);
                             mEditLayout.startAnimation(mToEditAnimation);
                             mMode = EDIT_MODE;

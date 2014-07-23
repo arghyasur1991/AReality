@@ -20,7 +20,6 @@
     
     <Button 
         android:id="@+id/CaptureScreenButton"
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="50dp"
         android:layout_height="100dp"
         android:layout_centerVertical="true"
@@ -30,18 +29,16 @@
 
     <Button
         android:id="@+id/ToggleRecordingButton"
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_height="100dp"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:visibility="gone"
-        android:background="@drawable/record_button_resource">
+        android:layout_marginRight="5dp"
+        android:visibility="gone">
     </Button>
     
     <Button
         android:id="@+id/ToggleEditModeButton"
-        style="?android:attr/buttonStyleSmall"
         android:layout_width="20dp"
         android:layout_height="40dp"
         android:layout_alignParentLeft="true"
@@ -82,7 +79,6 @@
     
         <Button
             android:id="@+id/ClearColorsButton"
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_toRightOf="@id/ChangeSelectColorMode"

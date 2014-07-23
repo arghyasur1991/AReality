@@ -44,6 +44,7 @@ public class CameraModeController {
         mRecordingButton = (Button) mActivity.findViewById(R.id.ToggleRecordingButton);
         
         mCaptureButton.setBackground(new CameraControlsDrawable(mActivity).getDrawable());
+        mRecordingButton.setBackground(new RecordControlsDrawable(mActivity).getDrawable());
         
         mToggleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -74,7 +75,7 @@ public class CameraModeController {
 
                     @Override
                     public void onClick(View v) {
-                        clickToggleRecording();
+                        //clickToggleRecording();
                     }
                 });
     }
