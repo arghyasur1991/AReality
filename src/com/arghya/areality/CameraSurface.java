@@ -53,6 +53,10 @@ public class CameraSurface implements SurfaceTexture.OnFrameAvailableListener {
         mSurface.getTransformMatrix(mSTMatrix);
     }
     
+    public long getTimeStamp(long offset) {
+        return mSurface.getTimestamp() - offset;
+    }
+    
     public long getTimeStamp() {
         return mSurface.getTimestamp();
     }

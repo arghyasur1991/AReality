@@ -102,6 +102,7 @@ public class CameraModeController {
                     @Override
                     public void onClick(View v) {
                         mPauseRecordingButton.setActivated(!mPauseRecordingButton.isActivated());
+                        mGLSurfaceView.togglePauseRecording(mPauseRecordingButton.isActivated());
                     }
                 });
         
@@ -129,7 +130,7 @@ public class CameraModeController {
     public void clickToggleRecording() {
         mRecordingEnabled = !mRecordingEnabled;
 
-        //mGLSurfaceView.changeRecordingState(mRecordingEnabled);
+        mGLSurfaceView.changeRecordingState(mRecordingEnabled);
         updateControls();
     }
     

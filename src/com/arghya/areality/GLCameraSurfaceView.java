@@ -66,6 +66,15 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         });
     }
     
+    public void togglePauseRecording(final boolean paused) {
+        queueEvent(new Runnable() {
+            @Override
+            public void run() {
+                mRenderer.togglePauseRecording(paused);
+            }
+        });
+    }
+    
     public void setMedia(final String filePath, final int type) {
         queueEvent(new Runnable() {
             @Override

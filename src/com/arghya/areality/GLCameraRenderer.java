@@ -48,7 +48,11 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
     
     private final TextureMovieEncoder mVideoEncoder;
     private boolean mRecordingEnabled;
+    private boolean mRecordingPaused;
     private int mRecordingStatus;
+    private long mTotalPausedTime;
+    private long mTotalRecordingTime;
+    
     private EncoderDrawingObject mEncoderDrawingObject;
     
     private final File mOutputFile;
@@ -66,6 +70,9 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         
         mRecordingStatus = -1;
         mRecordingEnabled = false;
+        mRecordingPaused = false;
+        mTotalPausedTime = 0;
+        mTotalRecordingTime = 0;
         
         mOutputFile = new File(Environment.getExternalStorageDirectory(), "camera-test.mp4");
     }
@@ -103,7 +110,13 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
      * Notifies the renderer that we want to stop or start recording.
      */
     public void changeRecordingState(boolean isRecording) {
+        mTotalPausedTime = 0;
+        mTotalRecordingTime = 0;
         mRecordingEnabled = isRecording;
+    }
+    
+    public void togglePauseRecording(boolean paused) {
+        mRecordingPaused = paused;
     }
     
     public ArrayList<float[]> getKeys() {
@@ -148,9 +161,14 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         // Tell the video encoder thread that a new frame is available.
         // This will be ignored if we're not actually recording.
         
-        mEncoderDrawingObject.setData(mMVPMatrix, mSTMatrix, mCameraSurface.getTimeStamp());
-        
-        mVideoEncoder.frameAvailable(mEncoderDrawingObject);
+        if(!mRecordingPaused) {
+            mTotalRecordingTime = mCameraSurface.getTimeStamp() - mTotalPausedTime;
+            mEncoderDrawingObject.setData(mMVPMatrix, mSTMatrix, mTotalRecordingTime);
+            mVideoEncoder.frameAvailable(mEncoderDrawingObject);
+        }
+        else {
+            mTotalPausedTime = mCameraSurface.getTimeStamp() - mTotalRecordingTime;
+        }
         
     }
 
