@@ -54,7 +54,10 @@ public class CameraModeController {
         
         mCaptureButton.setBackground(new CameraControlsDrawable(mActivity, CAPTURE_MODE).getDrawable());
         mStartRecordingButton.setBackground(new CameraControlsDrawable(mActivity, RECORDING_MODE).getDrawable());
+        
         mRecordingButtonGroup.setBackground(new RecordGroupDrawable(mActivity).getDrawable());
+        mPauseRecordingButton.setBackground(new RecordControlsDrawable(mActivity, 0).getDrawable());
+        mStopRecordingButton.setBackground(new RecordControlsDrawable(mActivity, 1).getDrawable());
         
         mToggleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -98,7 +101,7 @@ public class CameraModeController {
 
                     @Override
                     public void onClick(View v) {
-                        
+                        mPauseRecordingButton.setActivated(!mPauseRecordingButton.isActivated());
                     }
                 });
         

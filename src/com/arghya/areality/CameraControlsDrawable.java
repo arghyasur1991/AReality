@@ -8,11 +8,6 @@ package com.arghya.areality;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.LightingColorFilter;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.*;
 
 /**
