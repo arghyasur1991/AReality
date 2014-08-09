@@ -82,20 +82,26 @@ public class Shaders {
                 int texHandle2 = GLES20.glGetUniformLocation(mProgram, "sTexture2");
                 
                 ArrayList<float[]> keys = mRenderer.getKeys();
-                ArrayList<float[]> tolerances = mRenderer.getTolerances();
+                ArrayList<Float> tolerances = mRenderer.getTolerances();
 
                 int numKeysHandle = GLES20.glGetUniformLocation(mProgram, "uNumOfKeys");
                 GLES20.glUniform1i(numKeysHandle, keys.size());
 
                 float[] keyBuffer = getBuffer(keys);
 
-                float[] toleranceBuffer = getBuffer(tolerances);
+                float[] toleranceBuffer = new float[TransparentColorController.MAX_KEYS];
+                for (int i = 0; i < tolerances.size(); ++i) {
+                    toleranceBuffer[i] = tolerances.get(i);
+                }
 
                 int keysHandle = GLES20.glGetUniformLocation(mProgram, "uKeys");
                 GLES20.glUniform3fv(keysHandle, TransparentColorController.MAX_KEYS, keyBuffer, 0);
 
                 int toleranceHandle = GLES20.glGetUniformLocation(mProgram, "uThresholds");
-                GLES20.glUniform3fv(toleranceHandle, TransparentColorController.MAX_KEYS, toleranceBuffer, 0);
+                GLES20.glUniform1fv(toleranceHandle, TransparentColorController.MAX_KEYS, toleranceBuffer, 0);
+                
+                int smoothingHandle = GLES20.glGetUniformLocation(mProgram, "uSmoothing");
+                GLES20.glUniform1f(smoothingHandle, TransparentColorController.SMOOTHING_FACTOR);
                 
                 GLES20.glUniform1i(texHandle, mTextureIndex);
                 GLES20.glUniform1i(texHandle2, mTextureIndex + 1);
@@ -300,7 +306,7 @@ public class Shaders {
             return fragmentShaderCode;
         }
         
-        private static String textureChromaKeyBlend() {
+        private static String textureChromaKeyBlend3() {
             final String fragmentShaderCode
                     = "#extension GL_OES_EGL_image_external : require\n"
                     + "precision mediump float;\n"
@@ -334,6 +340,84 @@ public class Shaders {
                     + "     float r = Ca.r * alpha + (1.0 - alpha) * Cb.r; \n"
                     + "     float g = Ca.g * alpha + (1.0 - alpha) * Cb.g; \n"
                     + "     float b = Ca.b * alpha + (1.0 - alpha) * Cb.b; \n"
+                    + "     gl_FragColor = vec4(r, g, b, 1.0);\n"
+                    + "}";
+            return fragmentShaderCode;
+        }
+        
+        private static String textureChromaKeyBlend() {
+            final String fragmentShaderCode
+                    = "#extension GL_OES_EGL_image_external : require\n"
+                    + "precision mediump float;\n"
+                    + "varying vec2 vTextureCoord;\n"
+                    + "uniform int uNumOfKeys;\n"
+                    + "uniform vec3 uKeys[10];\n"
+                    + "uniform float uThresholds[10];\n"
+                    + "uniform float uSmoothing;\n"
+                    + "uniform samplerExternalOES sTexture1;\n"
+                    + "uniform samplerExternalOES sTexture2;\n"
+                    + "void getBlendValue(in vec4 Ca, in int index, out float blendValue) {\n"
+                    + "     float yDiff = 0.299 * (Ca.r - uKeys[index].x) + 0.587 * (Ca.g - uKeys[index].y) + 0.114 * (Ca.b - uKeys[index].z); \n"
+                    + "     float uDiff = -0.1471 * (Ca.r - uKeys[index].x) - 0.28886 * (Ca.g - uKeys[index].y) + 0.436 * (Ca.b - uKeys[index].z); \n"
+                    + "     float vDiff = 0.615 * (Ca.r - uKeys[index].x) - 0.51499 * (Ca.g - uKeys[index].y) - 0.10001 * (Ca.b - uKeys[index].z); \n"
+                    + "     float blendY = smoothstep(uThresholds[index] * 0.5, uThresholds[index] * 0.5 + uSmoothing, abs(yDiff)); \n"
+                    + "     float blendU = smoothstep(uThresholds[index] * 0.4, uThresholds[index] * 0.4 + uSmoothing, abs(uDiff)); \n"
+                    + "     float blendV = smoothstep(uThresholds[index] * 0.4, uThresholds[index] * 0.4 + uSmoothing, abs(vDiff)); \n"
+                    + "     blendValue = max(blendY, max(blendU, blendV));\n"
+                    + "}\n"
+                    + "void main() {\n"
+                    + "     vec4 Ca = texture2D(sTexture1, vTextureCoord); \n"
+                    + "     vec4 Cb = texture2D(sTexture2, vTextureCoord); \n"
+                    + "     float minBlendValue = 1.0; \n"
+                    + "     for(int i = 0; i < uNumOfKeys; i++) {\n"
+                    + "         float blend = 1.0;\n"
+                    + "         getBlendValue(Ca, i, blend);\n"
+                    + "         if(blend < minBlendValue) {\n"
+                    + "             minBlendValue = blend;\n"
+                    + "         }\n"
+                    + "     }\n"
+                    + "     float r = Ca.r * minBlendValue + (1.0 - minBlendValue) * Cb.r; \n"
+                    + "     float g = Ca.g * minBlendValue + (1.0 - minBlendValue) * Cb.g; \n"
+                    + "     float b = Ca.b * minBlendValue + (1.0 - minBlendValue) * Cb.b; \n"
+                    + "     gl_FragColor = vec4(r, g, b, 1.0);\n"
+                    + "}";
+            return fragmentShaderCode;
+        }
+        
+        private static String textureChromaKeyBlend4() {
+            final String fragmentShaderCode
+                    = "#extension GL_OES_EGL_image_external : require\n"
+                    + "precision mediump float;\n"
+                    + "varying vec2 vTextureCoord;\n"
+                    + "uniform int uNumOfKeys;\n"
+                    + "uniform vec3 uKeys[10];\n"
+                    + "uniform float uThresholds[10];\n"
+                    + "uniform float uSmoothing;\n"
+                    + "uniform samplerExternalOES sTexture1;\n"
+                    + "uniform samplerExternalOES sTexture2;\n"
+                    + "void getBlendValue(in vec4 Ca, in int index, out float blendValue) {\n"
+                    + "     float maskY = 0.2989 * uKeys[index].r + 0.5866 * uKeys[index].g + 0.1145 * uKeys[index].b; \n"
+                    + "     float maskCr = 0.7132 * (uKeys[index].r - maskY); \n"
+                    + "     float maskCb = 0.5647 * (uKeys[index].b - maskY); \n"
+                    + "     float Y = 0.2989 * Ca.r + 0.5866 * Ca.g + 0.1145 * Ca.b; \n"
+                    + "     float Cr = 0.7132 * (Ca.r - Y);\n"
+                    + "     float Cb = 0.5647 * (Ca.b - Y);\n"
+                    + "     blendValue = smoothstep(uThresholds[index], uThresholds[index] + uSmoothing, distance(vec2(Cr, Cb), vec2(maskCr, maskCb)));\n"
+                    + "}\n"
+                    + "void main() {\n"
+                    + "     vec4 Ca = texture2D(sTexture1, vTextureCoord); \n"
+                    + "     vec4 Cb = texture2D(sTexture2, vTextureCoord); \n"
+                    + "     float minBlendValue = 1.0; \n"
+                    + "     for(int i = 0; i < uNumOfKeys; i++) {\n"
+                    + "         float blend = 1.0;\n"
+                    + "         getBlendValue(Ca, i, blend);\n"
+                    + "         if(blend < minBlendValue) {\n"
+                    + "             minBlendValue = blend;\n"
+                    + "         }\n"
+                    + "     }\n"
+                    + "     float r = Ca.r * minBlendValue + (1.0 - minBlendValue) * Cb.r; \n"
+                    + "     float g = Ca.g * minBlendValue + (1.0 - minBlendValue) * Cb.g; \n"
+                    + "     float b = Ca.b * minBlendValue + (1.0 - minBlendValue) * Cb.b; \n"
                     + "     gl_FragColor = vec4(r, g, b, 1.0);\n"
                     + "}";
             return fragmentShaderCode;

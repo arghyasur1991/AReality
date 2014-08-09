@@ -114,7 +114,7 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         return mTCController.getListAdapter();
     }
     
-    public ArrayList<float[]> getTolerances() {
+    public ArrayList<Float> getTolerances() {
         return mTCController.getTolerances();
     }
     

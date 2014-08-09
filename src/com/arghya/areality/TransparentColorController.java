@@ -22,28 +22,28 @@ public class TransparentColorController {
     public static final int ADD_COLOR_MODE = 2;
     public static final int MAX_KEYS = 10;
     
+    public static final float SMOOTHING_FACTOR = 0.05f;
+    
     private final MainActivity mActivity;
     
     private final ArrayList<float[]> mColorList;
-    private final ArrayList<float[]> mTolerances;
+    private final ArrayList<Float> mTolerances;
     private final ColorListAdapter mListAdapter;
     
-    private final float[] mToleranceFactor = {0.2f, 0.15f, 0.15f};
+    private final float mToleranceFactor = 0.4f;
     private int mMode;
     
     public TransparentColorController(MainActivity context) {
         mColorList = new ArrayList<float[]>();
-        mTolerances = new ArrayList<float[]>();
+        mTolerances = new ArrayList<Float>();
         mMode = NO_SELECT_MODE;
         
         mActivity = context;
         
         mListAdapter = new ColorListAdapter(context, R.layout.main, mColorList);
         
-        /*float[] c = {0,0,0};
-        float[] c1 = {1, 0, 0};
+        float[] c = {1.0f, 0.0f, 0.0f};
         addColor(c);
-        addColor(c1);*/
     }
     
     public int getMode() {
@@ -88,19 +88,22 @@ public class TransparentColorController {
         return mColorList;
     }
     
-    public ArrayList<float[]> getTolerances() {
+    public ArrayList<Float> getTolerances() {
         return mTolerances;
     }
     
     private boolean isClose(float[] color, int keyIndex) {
         float[] key = mColorList.get(keyIndex);
-        float[] tolerance = mTolerances.get(keyIndex);
+        float tolerance = mTolerances.get(keyIndex);
         
         float yDiff = 0.299f * (color[0] - key[0]) + 0.587f * (color[1] - key[1]) + 0.114f * (color[2] - key[2]);
         float uDiff = -0.1471f * (color[0] - key[0]) - 0.28886f * (color[1] - key[1]) + 0.436f * (color[2] - key[2]);
         float vDiff = 0.615f * (color[0] - key[0]) - 0.51499f * (color[1] - key[1]) - 0.10001f * (color[2] - key[2]);
-        
-        return (Math.abs(yDiff) < tolerance[0] && Math.abs(uDiff) < tolerance[1] && Math.abs(vDiff) < tolerance[2]);
+
+        return (Math.abs(yDiff) < (tolerance * 0.5 + SMOOTHING_FACTOR) &&
+                Math.abs(uDiff) < (tolerance * 0.4 + SMOOTHING_FACTOR) &&
+                Math.abs(vDiff) < (tolerance * 0.4 + SMOOTHING_FACTOR));
+
     }
     
     private void addColor(float[] color) {
