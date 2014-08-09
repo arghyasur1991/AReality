@@ -42,8 +42,9 @@ public class TransparentColorController {
         
         mListAdapter = new ColorListAdapter(context, R.layout.main, mColorList);
         
+        /*
         float[] c = {1.0f, 0.0f, 0.0f};
-        addColor(c);
+        addColor(c);*/
     }
     
     public int getMode() {

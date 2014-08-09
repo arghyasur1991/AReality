@@ -28,7 +28,7 @@
     </Button>
 
     <Button
-        android:id="@+id/ToggleRecordingButton"
+        android:id="@+id/StartRecordingButton"
         android:layout_width="50dp"
         android:layout_height="100dp"
         android:layout_centerVertical="true"
@@ -36,6 +36,34 @@
         android:layout_marginRight="5dp"
         android:visibility="gone">
     </Button>
+    
+    <LinearLayout
+        android:id="@+id/RecordingButtonGroup"
+        android:layout_width="50dp"
+        android:layout_height="100dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+        
+        <Button
+            android:id="@+id/PauseRecordingButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp">
+        </Button>
+        
+        <Button
+            android:id="@+id/StopRecordingButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp">
+        </Button>
+        
+    </LinearLayout>
     
     <Button
         android:id="@+id/ToggleEditModeButton"

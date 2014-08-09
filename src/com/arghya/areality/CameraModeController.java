@@ -9,6 +9,7 @@ package com.arghya.areality;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 
 /**
@@ -27,7 +28,11 @@ public class CameraModeController {
     private int mMode;
     
     private final Button mCaptureButton;
-    private final Button mRecordingButton;
+    private final Button mStartRecordingButton;
+    
+    private final LinearLayout mRecordingButtonGroup;
+    private final Button mPauseRecordingButton;
+    private final Button mStopRecordingButton;
     
     private final Switch mToggleSwitch;
     
@@ -41,22 +46,31 @@ public class CameraModeController {
         mToggleSwitch = (Switch) mActivity.findViewById(R.id.ToggleCameraMode);
         
         mCaptureButton = (Button) mActivity.findViewById(R.id.CaptureScreenButton);
-        mRecordingButton = (Button) mActivity.findViewById(R.id.ToggleRecordingButton);
+        mStartRecordingButton = (Button) mActivity.findViewById(R.id.StartRecordingButton);
+        
+        mRecordingButtonGroup = (LinearLayout) mActivity.findViewById(R.id.RecordingButtonGroup);
+        mPauseRecordingButton = (Button) mActivity.findViewById(R.id.PauseRecordingButton);
+        mStopRecordingButton = (Button) mActivity.findViewById(R.id.StopRecordingButton);
         
         mCaptureButton.setBackground(new CameraControlsDrawable(mActivity).getDrawable());
-        mRecordingButton.setBackground(new RecordControlsDrawable(mActivity).getDrawable());
+        mStartRecordingButton.setBackground(new RecordControlsDrawable(mActivity).getDrawable());
+        mRecordingButtonGroup.setBackground(new RecordGroupDrawable(mActivity).getDrawable());
         
         mToggleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
                     mMode = CAPTURE_MODE;
+                    if(mRecordingEnabled) {
+                        clickToggleRecording();
+                    }
+                    mStartRecordingButton.setVisibility(View.GONE);
                     mCaptureButton.setVisibility(View.VISIBLE);
-                    mRecordingButton.setVisibility(View.GONE);
 
                 } else {
                     mMode = RECORDING_MODE;
                     mCaptureButton.setVisibility(View.GONE);
-                    mRecordingButton.setVisibility(View.VISIBLE);
+                    mRecordingButtonGroup.setVisibility(View.GONE);
+                    mStartRecordingButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -70,12 +84,30 @@ public class CameraModeController {
                     }
                 });
 
-        Utilities.setButtonOnClick(R.id.ToggleRecordingButton,
+        Utilities.setButtonOnClick(R.id.StartRecordingButton,
                 new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        //clickToggleRecording();
+                        clickToggleRecording();
+                    }
+                });
+        
+        Utilities.setButtonOnClick(R.id.PauseRecordingButton,
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        
+                    }
+                });
+        
+        Utilities.setButtonOnClick(R.id.StopRecordingButton,
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        clickToggleRecording();
                     }
                 });
     }
@@ -94,7 +126,7 @@ public class CameraModeController {
     public void clickToggleRecording() {
         mRecordingEnabled = !mRecordingEnabled;
 
-        mGLSurfaceView.changeRecordingState(mRecordingEnabled);
+        //mGLSurfaceView.changeRecordingState(mRecordingEnabled);
         updateControls();
     }
     
@@ -102,6 +134,13 @@ public class CameraModeController {
      * Updates the on-screen controls to reflect the current state of the app.
      */
     private void updateControls() {
-        mRecordingButton.setActivated(mRecordingEnabled);
+        if(mRecordingEnabled) {
+            mStartRecordingButton.setVisibility(View.GONE);
+            mRecordingButtonGroup.setVisibility(View.VISIBLE);
+        }
+        else {
+            mStartRecordingButton.setVisibility(View.VISIBLE);
+            mRecordingButtonGroup.setVisibility(View.GONE);
+        }
     }
 }
