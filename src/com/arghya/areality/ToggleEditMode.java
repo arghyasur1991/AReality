@@ -34,8 +34,9 @@ public class ToggleEditMode {
     public ToggleEditMode(MainActivity activity) {
         mActivity = activity;
         mEditLayout = (RelativeLayout) mActivity.findViewById(R.id.EditFrame);
-        mMode = NO_EDIT_MODE;
+        mMode = EDIT_MODE;
         mToggleEditModeButton = (Button) mActivity.findViewById(R.id.ToggleEditModeButton);
+        mToggleEditModeButton.setActivated(true);
         
         mToEditAnimation = new AnimationSet(false);
         Animation transAnimation1 = new TranslateAnimation(-Utilities.convertToPx(300), 0, 0, 0);

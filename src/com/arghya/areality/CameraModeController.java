@@ -52,8 +52,8 @@ public class CameraModeController {
         mPauseRecordingButton = (Button) mActivity.findViewById(R.id.PauseRecordingButton);
         mStopRecordingButton = (Button) mActivity.findViewById(R.id.StopRecordingButton);
         
-        mCaptureButton.setBackground(new CameraControlsDrawable(mActivity).getDrawable());
-        mStartRecordingButton.setBackground(new RecordControlsDrawable(mActivity).getDrawable());
+        mCaptureButton.setBackground(new CameraControlsDrawable(mActivity, CAPTURE_MODE).getDrawable());
+        mStartRecordingButton.setBackground(new CameraControlsDrawable(mActivity, RECORDING_MODE).getDrawable());
         mRecordingButtonGroup.setBackground(new RecordGroupDrawable(mActivity).getDrawable());
         
         mToggleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

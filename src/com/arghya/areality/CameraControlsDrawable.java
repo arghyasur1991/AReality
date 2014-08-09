@@ -21,11 +21,12 @@ import android.graphics.drawable.*;
  */
 public class CameraControlsDrawable {
     private static final int mCameraButtonResource = R.drawable.camera_black;
+    private static final int mRecordButtonResource = R.drawable.record;
     
     private final StateListDrawable mDrawable;
     private final Drawable mCameraDrawable;
     
-    public CameraControlsDrawable(Context context) {
+    public CameraControlsDrawable(Context context, int mode) {
         mDrawable = new StateListDrawable();
         
         int[] outerColors = {Color.rgb(220, 220, 220), Color.rgb(230, 230, 230)};
@@ -39,9 +40,23 @@ public class CameraControlsDrawable {
         
         InsetDrawable innerRectNormalInset = getInnerRect(innerColorsNormal);
         
-        mCameraDrawable = context.getResources().getDrawable(mCameraButtonResource);
-        InsetDrawable cameraInset = new InsetDrawable(mCameraDrawable, Utilities.convertToPx(9),
-                Utilities.convertToPx(35), Utilities.convertToPx(9), Utilities.convertToPx(35));
+        int[] cameraInsetParams = new int[2]; 
+        if(mode == CameraModeController.CAPTURE_MODE) {
+            mCameraDrawable = context.getResources().getDrawable(mCameraButtonResource);
+            cameraInsetParams[0] = 9;
+            cameraInsetParams[1] = 35;
+        }
+        else {
+            mCameraDrawable = context.getResources().getDrawable(mRecordButtonResource);
+            cameraInsetParams[0] = 9;
+            cameraInsetParams[1] = 38;
+        }
+        
+        InsetDrawable cameraInset = new InsetDrawable(mCameraDrawable,
+                            Utilities.convertToPx(cameraInsetParams[0]),
+                            Utilities.convertToPx(cameraInsetParams[1]),
+                            Utilities.convertToPx(cameraInsetParams[0]),
+                            Utilities.convertToPx(cameraInsetParams[1]));
         
         LayerDrawable normalStateLayer = getLayerDrawable(outerRect, innerRectNormalInset, cameraInset);
         
