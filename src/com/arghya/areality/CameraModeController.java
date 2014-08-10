@@ -44,6 +44,8 @@ public class CameraModeController {
         mMode = CAPTURE_MODE;
         
         mToggleSwitch = (Switch) mActivity.findViewById(R.id.ToggleCameraMode);
+        mToggleSwitch.setThumbDrawable(new ThumbDrawable(mActivity).getDrawable());
+        //mToggleSwitch.setTrackDrawable(new RecordGroupDrawable(mActivity).getDrawable());
         
         mCaptureButton = (Button) mActivity.findViewById(R.id.CaptureScreenButton);
         mStartRecordingButton = (Button) mActivity.findViewById(R.id.StartRecordingButton);
@@ -102,7 +104,7 @@ public class CameraModeController {
                     @Override
                     public void onClick(View v) {
                         mPauseRecordingButton.setActivated(!mPauseRecordingButton.isActivated());
-                        mGLSurfaceView.togglePauseRecording(mPauseRecordingButton.isActivated());
+                        //mGLSurfaceView.togglePauseRecording(mPauseRecordingButton.isActivated());
                     }
                 });
         
@@ -130,7 +132,7 @@ public class CameraModeController {
     public void clickToggleRecording() {
         mRecordingEnabled = !mRecordingEnabled;
 
-        mGLSurfaceView.changeRecordingState(mRecordingEnabled);
+        //mGLSurfaceView.changeRecordingState(mRecordingEnabled);
         updateControls();
     }
     
