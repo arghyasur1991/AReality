@@ -123,8 +123,8 @@ public class GLCameraRenderer implements GLSurfaceView.Renderer {
         return mTCController.getKeys();
     }
     
-    public ColorListAdapter getColorListAdapter() {
-        return mTCController.getListAdapter();
+    public TransparentColorController getTCController() {
+        return mTCController;
     }
     
     public ArrayList<Float> getTolerances() {

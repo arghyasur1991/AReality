@@ -140,10 +140,10 @@
     
         <GridView xmlns:android="http://schemas.android.com/apk/res/android"
               android:id="@+id/KeyList"
-              android:layout_width="350dp"
+              android:layout_width="180dp"
               android:layout_height="40dp" 
               android:columnWidth="30dp"
-              android:numColumns="10"
+              android:numColumns="5"
               android:layout_alignParentBottom="true"
               android:background="@drawable/gradient_box"/> 
         

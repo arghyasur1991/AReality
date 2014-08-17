@@ -37,6 +37,8 @@ public class MainActivity extends Activity {
     private ToggleEditMode mToggleEditMode;
     private MediaChooser mMediaChooser;
     private TextureMovieEncoder sVideoEncoder;
+    
+    private GridView mGridView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,8 +60,8 @@ public class MainActivity extends Activity {
         mModeSelection = new ModeSelection(this);
         mMediaChooser = new MediaChooser(this);
         
-        GridView listview = (GridView) findViewById(R.id.KeyList);
-        listview.setAdapter(mGLSurfaceView.getColorListAdapter());
+        mGridView = (GridView) findViewById(R.id.KeyList);
+        mGridView.setAdapter(mGLSurfaceView.getTCController().getListAdapter());
         
         Button clear = (Button) findViewById(R.id.ClearColorsButton);
         DrawableLayeredButton db = new DrawableLayeredButton(this, R.drawable.clear, false);

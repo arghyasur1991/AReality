@@ -106,8 +106,8 @@ public class GLCameraSurfaceView extends GLSurfaceView {
         return mRenderer.getKeys();
     }
     
-    public ColorListAdapter getColorListAdapter() {
-        return mRenderer.getColorListAdapter();
+    public TransparentColorController getTCController() {
+        return mRenderer.getTCController();
     }
     
     @Override
