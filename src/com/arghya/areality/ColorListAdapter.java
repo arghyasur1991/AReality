@@ -7,9 +7,13 @@
 package com.arghya.areality;
 
 import android.content.Context;
+import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
@@ -23,6 +27,8 @@ public class ColorListAdapter extends ArrayAdapter<float[]>{
     private final Context mContext;
     private final ArrayList<float[]> mKeyList;
     private int mSelectedColorIndex = -1;
+    private SelectionChangedListener mSelectionChangedListener;
+    
     public ColorListAdapter(Context context, int resource, ArrayList<float[]> keys) {
         super(context, resource, keys);
         mContext = context;
@@ -33,13 +39,21 @@ public class ColorListAdapter extends ArrayAdapter<float[]>{
         return mSelectedColorIndex;
     }
     
+    public void setOnSelectionChangedListener(SelectionChangedListener listener) {
+        mSelectionChangedListener = listener;
+    }
+    
+    public interface SelectionChangedListener {
+        public void onSelectionChanged(int index);
+    }
+    
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.color_list, parent, false);
+        final View layout = inflater.inflate(R.layout.color_list, parent, false);
         
-        final Button colorButton = (Button) v.findViewById(R.id.colorButton);
+        final Button colorButton = (Button) layout.findViewById(R.id.colorButton);
         float[] color = mKeyList.get(position);
         int[] colorInt = new int[3];
         
@@ -47,18 +61,48 @@ public class ColorListAdapter extends ArrayAdapter<float[]>{
         colorInt[1] = Math.round(color[1] * 255);
         colorInt[2] = Math.round(color[2] * 255);
         
-        colorButton.setOnClickListener(new View.OnClickListener() {
+        final GestureDetector detector = new GestureDetector(mContext, new GestureDetector.OnGestureListener() {
 
-            public void onClick(View v) {
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            public void onShowPress(MotionEvent e) {
+            }
+
+            public boolean onSingleTapUp(MotionEvent e) {
+                View v1 = ((GridView) parent).getChildAt(mSelectedColorIndex);
+                Button cb = (Button) v1.findViewById(R.id.colorButton);
+                cb.setActivated(false);
+                
                 mSelectedColorIndex = position;
-                for(int i = 0; i < mKeyList.size(); i++) {
-                    if(i != mSelectedColorIndex) {
-                        View v1 = ((GridView) parent).getChildAt(i);
-                        Button cb = (Button) v1.findViewById(R.id.colorButton);
-                        cb.setActivated(false);
-                    }
-                }
                 colorButton.setActivated(true);
+                
+                if(mSelectionChangedListener != null)
+                    mSelectionChangedListener.onSelectionChanged(mSelectedColorIndex);
+                return true;
+            }
+
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                return true;
+            }
+
+            public void onLongPress(MotionEvent e) {
+            }
+
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                mKeyList.remove(position);
+                mSelectedColorIndex = mKeyList.size() - 1;
+                notifyDataSetChanged();
+                return true;
+            }
+        });
+        
+        colorButton.setOnTouchListener(new View.OnTouchListener() {
+            
+            public boolean onTouch(View v, MotionEvent me) {
+                detector.onTouchEvent(me);
+                return true;
             }
         });
         
@@ -66,8 +110,11 @@ public class ColorListAdapter extends ArrayAdapter<float[]>{
         if(position == mKeyList.size() - 1) {
             colorButton.setActivated(true);
             mSelectedColorIndex = position;
+            if (mSelectionChangedListener != null) {
+                mSelectionChangedListener.onSelectionChanged(mSelectedColorIndex);
+            }
         }
-        return v;
+        return layout;
     }
     
 }

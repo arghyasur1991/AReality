@@ -26,8 +26,8 @@ public class ColorButtonDrawable {
         colorRect.setCornerRadius(Utilities.convertToPx(5));
         colorRect.setStroke(Utilities.convertToPx(1), Color.BLACK);
 
-        int width = Utilities.convertToPx(30);
-        int height = Utilities.convertToPx(30);
+        int width = Utilities.convertToPx(40);
+        int height = Utilities.convertToPx(40);
         
         colorRect.setSize(width, height);
         

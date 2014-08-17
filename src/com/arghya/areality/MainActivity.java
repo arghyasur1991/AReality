@@ -25,6 +25,8 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Switch;
 import java.io.File;
 import java.util.ArrayList;
@@ -37,8 +39,10 @@ public class MainActivity extends Activity {
     private ToggleEditMode mToggleEditMode;
     private MediaChooser mMediaChooser;
     private TextureMovieEncoder sVideoEncoder;
+    private TransparentColorController mTCController;
     
     private GridView mGridView;
+    private SeekBar mToleranceBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +65,36 @@ public class MainActivity extends Activity {
         mMediaChooser = new MediaChooser(this);
         
         mGridView = (GridView) findViewById(R.id.KeyList);
-        mGridView.setAdapter(mGLSurfaceView.getTCController().getListAdapter());
+        
+        mToleranceBar = (SeekBar) findViewById(R.id.tolerance);
+        
+        mTCController = mGLSurfaceView.getTCController();
+        ColorListAdapter adapter = mTCController.getListAdapter();
+        adapter.setOnSelectionChangedListener(new ColorListAdapter.SelectionChangedListener() {
+
+            public void onSelectionChanged(int index) {
+                mToleranceBar.setProgress((int)(mTCController.getTolerance(index) * 100));
+            }
+        });
+        
+        mToleranceBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            int progressChanged = 0;
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressChanged = progress;
+                mTCController.setTolerance(progressChanged);
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mTCController.setTolerance(progressChanged);
+            }
+        });
+        
+        mGridView.setAdapter(adapter);
         
         Button clear = (Button) findViewById(R.id.ClearColorsButton);
         DrawableLayeredButton db = new DrawableLayeredButton(this, R.drawable.clear, false);

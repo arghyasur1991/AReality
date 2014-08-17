@@ -42,9 +42,10 @@ public class TransparentColorController {
         
         mListAdapter = new ColorListAdapter(context, R.layout.main, mColorList);
         
-        /*
-        float[] c = {1.0f, 0.0f, 0.0f};
-        addColor(c);*/
+        if(true){
+            float[] c = {1.0f, 0.0f, 0.0f};
+            addColor(c);
+        }
     }
     
     public int getMode() {
@@ -53,6 +54,14 @@ public class TransparentColorController {
     
     public void setMode(int mode) {
         mMode = mode;
+    }
+    
+    public float getTolerance(int index) {
+        return mTolerances.get(index);
+    }
+    
+    public void setTolerance(int progress) {
+        mTolerances.set(mListAdapter.getSelectedIndex(), (float) progress / 100);
     }
     
     public ColorListAdapter getListAdapter() {
