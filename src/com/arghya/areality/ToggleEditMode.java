@@ -61,6 +61,7 @@ public class ToggleEditMode {
 
             public void onAnimationEnd(Animation animation) {
                 mToggleEditModeButton.setActivated(!mToggleEditModeButton.isActivated());
+                mActivity.resetSelectMode();
             }
 
             public void onAnimationRepeat(Animation animation) {

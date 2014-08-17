@@ -28,6 +28,7 @@ public class ColorListAdapter extends ArrayAdapter<float[]>{
     private final ArrayList<float[]> mKeyList;
     private int mSelectedColorIndex = -1;
     private SelectionChangedListener mSelectionChangedListener;
+    private ColorRemovedListener mColorRemovedListener;
     
     public ColorListAdapter(Context context, int resource, ArrayList<float[]> keys) {
         super(context, resource, keys);
@@ -43,14 +44,21 @@ public class ColorListAdapter extends ArrayAdapter<float[]>{
         mSelectionChangedListener = listener;
     }
     
+    public void setOnColorRemovedListener(ColorRemovedListener listener) {
+        mColorRemovedListener = listener;
+    }
+    
     public interface SelectionChangedListener {
         public void onSelectionChanged(int index);
     }
     
+    public interface ColorRemovedListener {
+        public void onColorRemoved(int index);
+    }
+    
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) mContext
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View layout = inflater.inflate(R.layout.color_list, parent, false);
         
         final Button colorButton = (Button) layout.findViewById(R.id.colorButton);
@@ -91,9 +99,8 @@ public class ColorListAdapter extends ArrayAdapter<float[]>{
             }
 
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                mKeyList.remove(position);
+                mColorRemovedListener.onColorRemoved(mSelectedColorIndex);
                 mSelectedColorIndex = mKeyList.size() - 1;
-                notifyDataSetChanged();
                 return true;
             }
         });

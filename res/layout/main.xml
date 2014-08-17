@@ -116,16 +116,19 @@
     
         <SeekBar
             android:id="@+id/tolerance"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="20dp"
             android:max="100"
-            android:layout_centerVertical="true"
-            android:progressDrawable="@drawable/progress"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="40dp"
+            android:progressDrawable="@drawable/progress_bar"
             android:thumb="@drawable/thumb"
             android:thumbOffset="-1dp"
             android:progress="50"
             android:secondaryProgress="0"
-            android:rotation="270">
+            android:visibility="gone">
         
         </SeekBar>
     

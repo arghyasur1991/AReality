@@ -73,7 +73,18 @@ public class MainActivity extends Activity {
         adapter.setOnSelectionChangedListener(new ColorListAdapter.SelectionChangedListener() {
 
             public void onSelectionChanged(int index) {
+                if(mToleranceBar.getVisibility() == View.GONE)
+                    mToleranceBar.setVisibility(View.VISIBLE);
                 mToleranceBar.setProgress((int)(mTCController.getTolerance(index) * 100));
+            }
+        });
+        
+        adapter.setOnColorRemovedListener(new ColorListAdapter.ColorRemovedListener() {
+
+            public void onColorRemoved(int index) {
+                mTCController.removeColor(index);
+                if(mTCController.getKeys().isEmpty())
+                    mToleranceBar.setVisibility(View.GONE);
             }
         });
         
@@ -105,7 +116,8 @@ public class MainActivity extends Activity {
 
                     @Override
                     public void onClick(View v) {
-                        mGLSurfaceView.clearKeyList();
+                        mTCController.removeAll();
+                        mToleranceBar.setVisibility(View.GONE);
                     }
                 });
     }
@@ -126,6 +138,11 @@ public class MainActivity extends Activity {
 
     public void setSelectMode(int mode) {
         mGLSurfaceView.setSelectMode(mode);
+    }
+    
+    public void resetSelectMode() {
+        mModeSelection.selectMode(TransparentColorController.NO_SELECT_MODE);
+        setSelectMode(TransparentColorController.NO_SELECT_MODE);
     }
     
     @Override

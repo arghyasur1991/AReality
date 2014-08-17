@@ -42,10 +42,11 @@ public class TransparentColorController {
         
         mListAdapter = new ColorListAdapter(context, R.layout.main, mColorList);
         
+        /*
         if(true){
             float[] c = {1.0f, 0.0f, 0.0f};
             addColor(c);
-        }
+        }*/
     }
     
     public int getMode() {
@@ -172,9 +173,7 @@ public class TransparentColorController {
         mColorList.remove(index);
         mTolerances.remove(index);
 
-        if (mListAdapter != null) {
-            mListAdapter.notifyDataSetChanged();
-        }
+        notifyDataChangedAdapter();
     }
     
     public void removeAll() {

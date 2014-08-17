@@ -53,4 +53,8 @@ public class ModeSelection {
         });
     }
     
+    public void selectMode(int mode) {
+        mRadioGroup.check(mRadioButtons.get(mode).getId());
+    }
+    
 }
